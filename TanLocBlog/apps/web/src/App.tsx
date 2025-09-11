@@ -2,11 +2,13 @@ import { BrowserRouter, Routes, Route} from "react-router-dom";
 import MainPage from "./pages/MainPage"
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<MainPage />} />
-      </Routes>
-    </BrowserRouter>
+    <div className="min-h-screen bg-white dark:bg-gray-950 transition-colors">
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<MainPage />} />
+        </Routes>
+      </BrowserRouter>
+    </div>
   )
 }
 
