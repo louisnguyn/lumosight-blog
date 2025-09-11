@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom"
+import { NavLink, Link } from "react-router-dom"
 import { useState, useEffect } from "react";
 import { useTheme } from "../../ThemeProvider";
 import { supabase } from "../../db/supabaseClient";
@@ -26,7 +26,13 @@ export default function Header({ onSearch }: { onSearch: (search?: string) => vo
     };
     return (
         <header className="w-full bg-blue-600 dark:bg-gray-900 text-white py-4 px-6 flex items-center justify-between">
-            <h1 className="text-xl font-bold">TanLoc Blog Logo Here</h1>
+            <Link>
+                { theme === "light" ? (
+                    <img src="./logo_transparent.png" className="h-20" />
+                ) : (
+                    <img src="./logo.png" className="h-20" />
+                )}
+            </Link>
             <div>
                 <input
                 type="text"
@@ -51,7 +57,7 @@ export default function Header({ onSearch }: { onSearch: (search?: string) => vo
                             onClick={() => setDropdownOpen((open) => !open)}
                             className="px-3 py-2 rounded bg-gray-200 dark:bg-gray-700 dark:text-white text-black"
                         >
-                            {user.email}
+                            {user.user_metadata.full_name || user.email}
                         </button>
                         {dropdownOpen && (
                             <div className="absolute text-black right-6 mt-2 w-48 bg-white dark:bg-gray-800 rounded shadow-lg z-10">
