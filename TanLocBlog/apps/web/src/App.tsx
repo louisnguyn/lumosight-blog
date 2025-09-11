@@ -1,23 +1,12 @@
-import { supabase } from './supabaseClient';
-import { useEffect, useState } from 'react';
-
+import { BrowserRouter, Routes, Route} from "react-router-dom";
+import MainPage from "./pages/MainPage"
 function App() {
-  const [status, setStatus] = useState('Connecting...');
-
-  useEffect(() => {
-    supabase.from('test_table').select('*').limit(1)
-      .then(({ error }) => {
-        if (error) setStatus(`Connection failed: ${error.message}`);
-        else setStatus('Connected!');
-      });
-  }, []);
-
   return (
-    <main>
-      <h1 className="text-2xl font-bold">Supabase Connection Status</h1>
-      <p className="text-lg">{status}</p>
-      {/* ...existing code... */}
-    </main>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<MainPage />} />
+      </Routes>
+    </BrowserRouter>
   )
 }
 
