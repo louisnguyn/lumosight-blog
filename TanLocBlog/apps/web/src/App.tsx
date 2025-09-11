@@ -4,7 +4,7 @@ import LoginPage from "./pages/LoginPage"
 import SignupPage from "./pages/SignupPage"
 function App() {
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-950 transition-colors">
+    <div className="min-h-screen bg-white dark:bg-gray-950 transition-colors flex flex-col">
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<MainPage />} />
