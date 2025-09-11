@@ -17,7 +17,7 @@ function MainPage() {
 
   async function fetchPosts(filter?: { category?: string, tag?: string, search?: string }) {
     setStatus('Loading...');
-    let query = supabase.from('posts').select('*');
+    let query = supabase.from('posts').select('*').eq('active', true);
     if (filter?.category) {
       query = query.eq('categories', filter.category);
     }
@@ -61,8 +61,8 @@ function MainPage() {
               }}
             />
           </div>
-          <h1 className="text-2xl font-bold">Supabase Connection Status</h1>
-          <p className="text-lg">{status}</p>
+          {/* <h1 className="text-2xl font-bold">Supabase Connection Status</h1>
+          <p className="text-lg">{status}</p> */}
           {selectedPost ? (
             <Detail post={selectedPost} onBack={handleBackToList} />
           ) : (

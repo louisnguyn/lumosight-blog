@@ -14,33 +14,31 @@ export default function Signup() {
         e.preventDefault();
         setLoading(true);
         setError(null);
-        const { data, error } = await supabase.auth.signUp({ email, password,      
+        const { data, error: signUpError } = await supabase.auth.signUp({
+            email,
+            password,
             options: {
-        data: { full_name: fullName }
-      }
-    });
-    if (error) {
-        setError(error.message);
-        setLoading(false);
-        return;
-    }
-    const userId = data?.user?.id;
-    if (userId) {
-        const { error: profileError } = await supabase
-        .from("profile")
-        .insert([{ user_id: userId, full_name: fullName }]);
-        if (profileError) {
-        setError(profileError.message);
-        setLoading(false);
-        return;
+                data: { full_name: fullName }
+            }
+        });
+        if (signUpError) {
+            setError(signUpError.message);
+            setLoading(false);
+            return;
         }
-    }
+        const userId = data?.user?.id;
+        if (userId) {
+            const { error: profileError } = await supabase
+                .from("profile")
+                .insert([{ user_id: userId, full_name: fullName }]);
+            if (profileError) {
+                setError(profileError.message);
+                setLoading(false);
+                return;
+            }
+        }
         setLoading(false);
-        if (error) {
-        setError(error.message);
-        } else {
         navigate("/login"); // Redirect to login after successful signup
-        }
     };
 
     return (

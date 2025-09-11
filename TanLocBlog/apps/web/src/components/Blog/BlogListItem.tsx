@@ -1,8 +1,22 @@
-import React from "react";
 
-export default function BlogListItem({ post, onSelect }: { post: any, onSelect: (post: any) => void }) {
+export default function BlogListItem({ post, onSelect , onToggleActive}: { post: any, onSelect: (post: any) => void , onToggleActive?: (post: any,active: boolean) => void }) {
+  const formattedDate = post.updated_at
+    ? (() => {
+        const d = new Date(post.updated_at);
+        return `${d.getDate().toString().padStart(2, "0")}/${(d.getMonth() + 1)
+          .toString()
+          .padStart(2, "0")}/${d.getFullYear()}`;
+      })()
+    : post.created_at
+    ? (() => {
+        const d = new Date(post.created_at);
+        return `${d.getDate().toString().padStart(2, "0")}/${(d.getMonth() + 1)
+          .toString()
+          .padStart(2, "0")}/${d.getFullYear()}`;
+      })()
+    : "";
   return (
-    <div className="flex flex-col lg:flex-row gap-8 py-8 border-b">
+    <div className="flex flex-col lg:flex-row gap-8 py-8 border-b ml-10 mr-10">
       {/* Image */}
       <div className="flex-shrink-0 flex justify-center items-center">
         <img
@@ -14,14 +28,9 @@ export default function BlogListItem({ post, onSelect }: { post: any, onSelect: 
       {/* Content */}
       <div className="flex flex-col flex-1">
         <div className="flex items-center gap-4 mb-2 justify-between">
-          <span className="text-gray-500 text-base">    {post.created_at
-            ? (() => {
-                const d = new Date(post.created_at);
-                return `${d.getDate().toString().padStart(2, "0")}/${(d.getMonth() + 1)
-                    .toString()
-                    .padStart(2, "0")}/${d.getFullYear()}`;
-                })()
-            : ""}</span>
+          <span className="text-gray-500 text-base">    
+            {formattedDate}
+          </span>
           {post.categories && (
             <span className="bg-blue-300  text-gray-700 px-3 py-1 rounded-lg text-sm font-medium">{post.categories}</span>
           )}
@@ -52,6 +61,16 @@ export default function BlogListItem({ post, onSelect }: { post: any, onSelect: 
           <span>{post.views || 0} views</span>
           <span>{post.likes || 0} likes</span>
         </div>
+      {typeof post.active === "boolean" && onToggleActive && (
+        <div className="mt-4 flex lg:justify-end justify-center">
+          <button
+            className={`px-4 py-2 rounded ${post.active ? "bg-red-600 text-white" : "bg-green-400 text-white"} font-semibold mr-2`}
+            onClick={() => onToggleActive(post, !post.active)}
+          >
+            {post.active ? "Set Inactive" : "Set Active"}
+          </button>
+        </div>
+      )}
       </div>
     </div>
   );

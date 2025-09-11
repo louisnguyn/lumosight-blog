@@ -2,8 +2,6 @@ import { NavLink, Link } from "react-router-dom"
 import { useState, useEffect } from "react";
 import { useTheme } from "../../ThemeProvider";
 import { supabase } from "../../db/supabaseClient";
-import { FaSun } from 'react-icons/fa';
-import { FaMoon } from 'react-icons/fa';
 import SearchBar from "../SearchBar/SearchBar";
 import { FaUser } from 'react-icons/fa';
 import { CgPassword } from 'react-icons/cg';
@@ -11,17 +9,17 @@ import { FaUserEdit } from 'react-icons/fa';
 import { IoDocumentText } from 'react-icons/io5';
 import { MdLogout } from 'react-icons/md';
 import { useNavigate } from "react-router-dom";
-export default function Header({ onSearch }: { onSearch: (search?: string) => void }) {
+export default function Header({ onSearch }: { onSearch?: (search?: string) => void }) {
     const [search, setSearch] = useState("");
     const { theme, toggleTheme } = useTheme();
     const [user, setUser] = useState<any>(null);
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const navigate = useNavigate();
     const [profileName, setProfileName] = useState<string>("");
-    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setSearch(e.target.value);
-        onSearch(e.target.value);
-    };
+    // const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    //     setSearch(e.target.value);
+    //     onSearch(e.target.value);
+    // };
     // useEffect(() => {
     //     supabase.auth.getUser().then(({ data }) => setUser(data?.user ?? null));
     //     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -41,35 +39,20 @@ export default function Header({ onSearch }: { onSearch: (search?: string) => vo
                 if (profile && profile.full_name) {
                     setProfileName(profile.full_name);
                 } else {
-                    setProfileName(data.user.email);
+                    setProfileName("unknown user");
                 }
             }
         });
-        const { data: listener } = supabase.auth.onAuthStateChange(async (_event, session) => {
-            setUser(session?.user ?? null);
-            if (session?.user?.id) {
-                const { data: profile, error } = await supabase
-                    .from("profile")
-                    .select("full_name")
-                    .eq("user_id", session.user.id)
-                    .single();
-                if (profile && profile.full_name) {
-                    setProfileName(profile.full_name);
-                } else {
-                    setProfileName(session.user.email);
-                }
-            }
-        });
-        return () => { listener?.subscription.unsubscribe(); };
     }, []);
     const handleLogout = async () => {
         await supabase.auth.signOut();
         setDropdownOpen(false);
+        window.location.reload();
     };
     return (
         <header className="w-full bg-blue-600 dark:bg-gray-900 text-white py-4 px-6 flex items-center justify-between">
             <div>
-                <Link>
+                <Link to="/">
                     { theme === "light" ? (
                         <img src="./logo_transparent.png" className="h-20" />
                     ) : (
@@ -77,22 +60,17 @@ export default function Header({ onSearch }: { onSearch: (search?: string) => vo
                     )}
                 </Link>
             </div>
+            {typeof onSearch === "function" && (
             <div className="hidden lg:block">
-                {/* <input
-                type="text"
-                placeholder="Search posts..."
-                value={search}
-                onChange={handleSearchChange}
-                className="px-3 py-2 rounded bg-white text-black focus:outline-none sm:w-60 lg:w-120"
-                /> */}
                 <SearchBar
-                    value={search}
-                    onChange={val => {
+                value={search}
+                onChange={val => {
                     setSearch(val);
                     onSearch(val);
-                    }}
+                }}
                 />
             </div>
+            )}
             <nav className="flex items-center justify-center relative">
                 {!user ? (
                     <NavLink to="/login" className="ml-4 hover:underline">Login</NavLink>

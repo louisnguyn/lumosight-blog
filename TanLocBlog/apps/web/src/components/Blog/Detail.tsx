@@ -1,33 +1,25 @@
-// import React from "react";
 
-// export default function Detail({ post, onBack }: { post: any, onBack: () => void }) {
-//   if (!post) return null;
-//   return (
-//     <div className="p-4 bg-white dark:bg-gray-900 rounded shadow">
-//       <button onClick={onBack} className="mb-4 text-blue-600 underline">Back to list</button>
-//       <h2 className="text-2xl font-bold mb-2">{post.title}</h2>
-//       <div className="text-sm text-gray-500 mb-2">
-//         {post.categories && <span className="mr-2">{post.categories}</span>}
-//         {post.tags && <span>#{post.tags}</span>}
-//       </div>
-//       <div className="mb-4">{post.content}</div>
-//     </div>
-//   );
-// }
 import { supabase } from "../../db/supabaseClient";
-import React ,{useState, useEffect}from "react";
+import {useState, useEffect}from "react";
 import { BiArrowBack } from 'react-icons/bi';
 export default function Detail({ post, onBack }: { post: any, onBack: () => void }) {
     const [authorName, setAuthorName] = useState<string>("");
     if (!post) return null;
-    const formattedDate = post.created_at
-        ? (() => {
-            const d = new Date(post.created_at);
-            return `${d.getDate().toString().padStart(2, "0")}/${(d.getMonth() + 1)
+    const formattedDate = post.updated_at
+      ? (() => {
+          const d = new Date(post.updated_at);
+          return `${d.getDate().toString().padStart(2, "0")}/${(d.getMonth() + 1)
             .toString()
             .padStart(2, "0")}/${d.getFullYear()}`;
         })()
-        : "";
+      : post.created_at
+      ? (() => {
+          const d = new Date(post.created_at);
+          return `${d.getDate().toString().padStart(2, "0")}/${(d.getMonth() + 1)
+            .toString()
+            .padStart(2, "0")}/${d.getFullYear()}`;
+        })()
+      : "";
     useEffect(() => {
         async function fetchAuthor() {
             if (post?.author_id) {
