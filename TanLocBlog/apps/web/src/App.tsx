@@ -14,8 +14,8 @@ function App() {
 
   return (
     <main>
-      <h1>Supabase Connection Status</h1>
-      <p>{status}</p>
+      <h1 className="text-2xl font-bold">Supabase Connection Status</h1>
+      <p className="text-lg">{status}</p>
       {/* ...existing code... */}
     </main>
   )
