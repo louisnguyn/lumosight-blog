@@ -23,16 +23,16 @@ export default function Detail({ post, onBack }: { post: any, onBack: () => void
     useEffect(() => {
         async function fetchAuthor() {
             if (post?.author_id) {
-                    const { data, error } = await supabase
-                    .from("profile")
-                    .select("full_name")
-                    .eq("user_id", post.author_id)
-                    .single();
-                    if (data && data.full_name) {
-                    setAuthorName(data.full_name);
-                } else {
-                    setAuthorName("Unknown Author");
-                }
+                  const { data, error } = await supabase
+                  .from("profile")
+                  .select("full_name")
+                  .eq("user_id", post.author_id)
+                  .single();
+                  if (data && data.full_name) {
+                  setAuthorName(data.full_name);
+              } else {
+                  setAuthorName("Unknown Author");
+              }
             }
     }
     fetchAuthor();

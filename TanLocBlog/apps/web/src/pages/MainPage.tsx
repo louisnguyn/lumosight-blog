@@ -7,7 +7,7 @@ import BlogList from "../components/Blog/BlogList";
 import Detail from "../components/Blog/Detail";
 import SearchBar from "../components/SearchBar/SearchBar";
 function MainPage() {
-  const [status, setStatus] = useState('Connecting...');
+  // const [status, setStatus] = useState('Connecting...');
   const [posts, setPosts] = useState<any[]>([]);
   const [selectedPost, setSelectedPost] = useState<any>(null);
   const [search, setSearch] = useState("");
@@ -16,7 +16,7 @@ function MainPage() {
   }, []);
 
   async function fetchPosts(filter?: { category?: string, tag?: string, search?: string }) {
-    setStatus('Loading...');
+    // setStatus('Loading...');
     let query = supabase.from('posts').select('*').eq('active', true);
     if (filter?.category) {
       query = query.eq('categories', filter.category);
@@ -29,11 +29,11 @@ function MainPage() {
     }
     const { data, error } = await query;
     if (error) {
-      setStatus(`Error: ${error.message}`);
+      // setStatus(`Error: ${error.message}`);
       setPosts([]);
     } else {
       setPosts(data ?? []);
-      setStatus('Loaded');
+      // setStatus('Loaded');
     }
     setSelectedPost(null);
   }

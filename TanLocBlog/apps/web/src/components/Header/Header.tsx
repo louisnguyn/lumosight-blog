@@ -16,17 +16,6 @@ export default function Header({ onSearch }: { onSearch?: (search?: string) => v
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const navigate = useNavigate();
     const [profileName, setProfileName] = useState<string>("");
-    // const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    //     setSearch(e.target.value);
-    //     onSearch(e.target.value);
-    // };
-    // useEffect(() => {
-    //     supabase.auth.getUser().then(({ data }) => setUser(data?.user ?? null));
-    //     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-    //         setUser(session?.user ?? null);
-    //     });
-    //     return () => { listener?.subscription.unsubscribe(); };
-    // }, []);
     useEffect(() => {
         supabase.auth.getUser().then(async ({ data }) => {
             setUser(data?.user ?? null);
