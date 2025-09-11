@@ -5,10 +5,12 @@ import Footer from "../components/Footer/Footer"
 import SideBar from "../components/Sidebar/SideBar";
 import BlogList from "../components/Blog/BlogList";
 import Detail from "../components/Blog/Detail";
+import SearchBar from "../components/SearchBar/SearchBar";
 function MainPage() {
   const [status, setStatus] = useState('Connecting...');
   const [posts, setPosts] = useState<any[]>([]);
   const [selectedPost, setSelectedPost] = useState<any>(null);
+  const [search, setSearch] = useState("");
   useEffect(() => {
     fetchPosts();
   }, []);
@@ -50,6 +52,15 @@ function MainPage() {
       <div className="flex flex-row flex-1 lg:px-50">
         <SideBar onFilter={fetchPosts} />
         <main className=" lg:w-4/5 sm:w-2/3 p-6 dark:text-white">
+          <div className="block lg:hidden mb-4">
+            <SearchBar
+              value={search}
+              onChange={val => {
+                setSearch(val);
+                handleHeaderSearch(val);
+              }}
+            />
+          </div>
           <h1 className="text-2xl font-bold">Supabase Connection Status</h1>
           <p className="text-lg">{status}</p>
           {selectedPost ? (

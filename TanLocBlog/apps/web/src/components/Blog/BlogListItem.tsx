@@ -23,7 +23,7 @@ export default function BlogListItem({ post, onSelect }: { post: any, onSelect: 
                 })()
             : ""}</span>
           {post.categories && (
-            <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-lg text-sm font-medium">{post.categories}</span>
+            <span className="bg-blue-300  text-gray-700 px-3 py-1 rounded-lg text-sm font-medium">{post.categories}</span>
           )}
         </div>
         <h3

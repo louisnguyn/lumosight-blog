@@ -19,22 +19,22 @@ export default function Signup() {
         data: { full_name: fullName }
       }
     });
-        if (error) {
-            setError(error.message);
-            setLoading(false);
-            return;
+    if (error) {
+        setError(error.message);
+        setLoading(false);
+        return;
+    }
+    const userId = data?.user?.id;
+    if (userId) {
+        const { error: profileError } = await supabase
+        .from("profile")
+        .insert([{ user_id: userId, full_name: fullName }]);
+        if (profileError) {
+        setError(profileError.message);
+        setLoading(false);
+        return;
         }
-        // const userId = data?.user?.id;
-        // if (userId) {
-        //     const { error: profileError } = await supabase
-        //         .from("profile")
-        //         .insert([{ user_id: userId, full_name: fullName }]);
-        //     if (profileError) {
-        //         setError(profileError.message);
-        //         setLoading(false);
-        //         return;
-        //     }
-        // }
+    }
         setLoading(false);
         if (error) {
         setError(error.message);
