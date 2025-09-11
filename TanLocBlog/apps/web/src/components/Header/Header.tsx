@@ -26,13 +26,15 @@ export default function Header({ onSearch }: { onSearch: (search?: string) => vo
     };
     return (
         <header className="w-full bg-blue-600 dark:bg-gray-900 text-white py-4 px-6 flex items-center justify-between">
-            <Link>
-                { theme === "light" ? (
-                    <img src="./logo_transparent.png" className="h-20" />
-                ) : (
-                    <img src="./logo.png" className="h-20" />
-                )}
-            </Link>
+            <div>
+                <Link>
+                    { theme === "light" ? (
+                        <img src="./logo_transparent.png" className="h-20" />
+                    ) : (
+                        <img src="./logo.png" className="h-20" />
+                    )}
+                </Link>
+            </div>
             <div>
                 <input
                 type="text"
@@ -43,24 +45,18 @@ export default function Header({ onSearch }: { onSearch: (search?: string) => vo
                 />
             </div>
             <nav className="flex items-center justify-center relative">
-                <button
-                onClick={toggleTheme}
-                className="ml-4 px-3 py-3 rounded bg-gray-200 dark:bg-gray-700 dark:text-white text-black"
-                >
-                {theme === "dark" ? <FaSun /> : <FaMoon/>}
-                </button>
                 {!user ? (
                     <NavLink to="/login" className="ml-4 hover:underline">Login</NavLink>
                 ) : (
-                    <div className="ml-4 inline-block">
+                    <div className=" inline-block relative">
                         <button
                             onClick={() => setDropdownOpen((open) => !open)}
-                            className="px-3 py-2 rounded bg-gray-200 dark:bg-gray-700 dark:text-white text-black"
+                            className="px-3 py-2 rounded bg-white dark:bg-gray-700 dark:text-white text-black cursor-pointer "
                         >
                             {user.user_metadata.full_name || user.email}
                         </button>
                         {dropdownOpen && (
-                            <div className="absolute text-black right-6 mt-2 w-48 bg-white dark:bg-gray-800 rounded shadow-lg z-10">
+                            <div className="absolute left-0 bottom-0 translate-y-full w-full text-black right-6 mt-2 w-48 bg-white dark:bg-gray-800 rounded shadow-lg z-10">
                                 <button
                                     className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
                                     onClick={() => {/* TODO: implement change password */ setDropdownOpen(false); }}
@@ -71,7 +67,7 @@ export default function Header({ onSearch }: { onSearch: (search?: string) => vo
                                     className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
                                     onClick={() => {/* TODO: implement change info */ setDropdownOpen(false); }}
                                 >
-                                    Change Information
+                                    User Information
                                 </button>
                                 <button
                                     className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-red-600"

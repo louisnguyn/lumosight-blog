@@ -3,9 +3,12 @@ import { useEffect, useState } from 'react';
 import Header from "../components/Header/Header"
 import Footer from "../components/Footer/Footer"
 import SideBar from "../components/Sidebar/SideBar";
+import BlogList from "../components/Blog/BlogList";
+import Detail from "../components/Blog/Detail";
 function MainPage() {
   const [status, setStatus] = useState('Connecting...');
   const [posts, setPosts] = useState<any[]>([]);
+  const [selectedPost, setSelectedPost] = useState<any>(null);
   useEffect(() => {
     fetchPosts();
   }, []);
@@ -30,21 +33,30 @@ function MainPage() {
       setPosts(data ?? []);
       setStatus('Loaded');
     }
+    setSelectedPost(null);
   }
   const handleHeaderSearch = (search?: string) => {
     fetchPosts({ search });
   };
+  const handleSelectPost = (post: any) => {
+    setSelectedPost(post);
+  };
+  const handleBackToList = () => {
+    setSelectedPost(null);
+  };
   return (
     <div className="flex flex-col min-h-screen">
       <Header onSearch={handleHeaderSearch} />
-      <div className="flex flex-row flex-1">
+      <div className="flex flex-row flex-1 lg:px-50">
         <SideBar onFilter={fetchPosts} />
         <main className=" lg:w-4/5 sm:w-2/3 p-6 dark:text-white">
           <h1 className="text-2xl font-bold">Supabase Connection Status</h1>
           <p className="text-lg">{status}</p>
-          <pre className="p-4 rounded mt-4 overflow-x-auto">
-            {JSON.stringify(posts, null, 2)}
-          </pre>
+          {selectedPost ? (
+            <Detail post={selectedPost} onBack={handleBackToList} />
+          ) : (
+            <BlogList posts={posts} onSelect={handleSelectPost} />
+          )}
         </main>
       </div>
       <Footer />
