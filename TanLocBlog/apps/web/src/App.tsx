@@ -10,13 +10,13 @@ function App() {
     <div className="min-h-screen bg-white dark:bg-gray-950 transition-colors flex flex-col">
       <ThemeSwitch />
       <BrowserRouter>
-        <Analytics/>
         <Routes>
           <Route path="/" element={<MainPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/post-management" element={<PostManagementPage />} />
         </Routes>
+        <Analytics/>
       </BrowserRouter>
     </div>
   )
