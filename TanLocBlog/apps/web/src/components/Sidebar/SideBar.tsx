@@ -20,7 +20,7 @@ export default function SideBar({ onFilter }: { onFilter: (filter: { category?: 
   }, []);
 
   return (
-    <aside className="w-1/5 dark:text-white p-6">
+    <aside className="lg:w-1/5 sm:w-1/3 dark:text-white p-6">
       <h2 className="text-2x1 font-bold mb-2">Categories</h2>
       <ul>
         {categories.map(cat => (

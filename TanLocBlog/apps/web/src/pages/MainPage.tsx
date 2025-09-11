@@ -10,7 +10,7 @@ function MainPage() {
     fetchPosts();
   }, []);
 
-  async function fetchPosts(filter?: { category?: string, tag?: string }) {
+  async function fetchPosts(filter?: { category?: string, tag?: string, search?: string }) {
     setStatus('Loading...');
     let query = supabase.from('posts').select('*');
     if (filter?.category) {
@@ -18,6 +18,9 @@ function MainPage() {
     }
     if (filter?.tag) {
       query = query.ilike('tags', `%${filter.tag}%`);
+    }
+    if (filter?.search) {
+      query = query.or(`title.ilike.%${filter.search}%,content.ilike.%${filter.search}%`);
     }
     const { data, error } = await query;
     if (error) {
@@ -28,13 +31,15 @@ function MainPage() {
       setStatus('Loaded');
     }
   }
-
+  const handleHeaderSearch = (search?: string) => {
+    fetchPosts({ search });
+  };
   return (
     <div className="flex flex-col min-h-screen">
-      <Header />
+      <Header onSearch={handleHeaderSearch} />
       <div className="flex flex-row flex-1">
         <SideBar onFilter={fetchPosts} />
-        <main className=" w-4/5 p-6 dark:text-white">
+        <main className=" lg:w-4/5 sm:w-2/3 p-6 dark:text-white">
           <h1 className="text-2xl font-bold">Supabase Connection Status</h1>
           <p className="text-lg">{status}</p>
           <pre className="p-4 rounded mt-4 overflow-x-auto">
