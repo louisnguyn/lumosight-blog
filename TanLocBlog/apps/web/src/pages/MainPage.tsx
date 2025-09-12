@@ -52,7 +52,7 @@ function MainPage() {
   return (
     <div className="flex flex-col min-h-screen">
       <Header onSearch={handleHeaderSearch} />
-      <div className="flex flex-row flex-1 relative lg:px-50">
+      <div className="flex flex-row flex-1 sm:relative lg:px-50">
         {/* <SideBar onFilter={fetchPosts} /> */}
         <button
           className="lg:hidden absolute top-6 right-4 z-40 p-2 rounded bg-blue-600 text-white"
@@ -68,9 +68,9 @@ function MainPage() {
             className={`${
               sidebarOpen ? "absolute top-0 left-0 z-30 bg-white dark:bg-gray-900 w-full h-full opacity-100 translate-x-0" 
               : "hidden"
-            } lg:static lg:block lg:opacity-100 lg:translate-x-0 transition-all duration-500 ease-in-out`}
+            } lg:static lg:block lg:opacity-100 lg:translate-x-0 transition-all duration-500 ease-in-out sm:w-1/3 lg:w-1/5`}
           >
-          <SideBar onFilter={fetchPosts} />
+          <SideBar onFilter={fetchPosts} onItemClick={() => setSidebarOpen(false)} />
         </div>
         <main className=" lg:w-4/5 sm:w-2/3 p-6 dark:text-white">
           <div className="flex justify-center lg:hidden mb-4">

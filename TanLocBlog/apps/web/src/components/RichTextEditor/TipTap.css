@@ -1,0 +1,71 @@
+.tiptap {
+    :first-child {
+        margin-top: 0;
+    }
+    h1,
+    h2 {
+        font-weight: bold;
+        margin-top: 1rem;
+    }
+
+    h1 {
+        font-size: 2rem;
+    }
+
+    h2 {
+        font-size: 1.5rem;
+    }
+
+    h3 {
+        font-size: 1.1rem;
+    }
+
+    h4,
+    h5,
+    h6 {
+        font-size: 1rem;
+    }
+    h1,h2,h3,h4,h5,h6 {
+        line-height: 1.1;
+        margin-top: 2.5rem;
+        text-wrap: pretty;
+    }
+    mark {
+    background-color: #faf594;
+    border-radius: 0.4rem;
+    box-decoration-break: clone;
+    padding: 0.1rem 0.3rem;
+    }
+  ul,
+  ol {
+    padding: 0 1rem;
+    margin: 1.25rem 1rem 1.25rem 0.4rem;
+
+    li p {
+      margin-top: 0.25em;
+      margin-bottom: 0.25em;
+    }
+  }
+  blockquote {
+    border-left: 3px solid grey;
+    margin: 1.5rem 0;
+    padding-left: 1rem;
+  }
+  ul{
+    list-style-type: disc;
+  }
+  ol{
+    list-style-type: decimal;
+  }
+}
+button{
+    padding:0.5rem 0.5rem;
+}
+button:hover{
+    cursor:pointer;
+}
+
+.ProseMirror:focus {
+  outline: none;
+  box-shadow: none;
+}

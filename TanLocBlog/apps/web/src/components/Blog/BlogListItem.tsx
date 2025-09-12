@@ -1,4 +1,5 @@
-
+import { VscVmActive } from 'react-icons/vsc';
+import { MdDesktopAccessDisabled } from 'react-icons/md';
 export default function BlogListItem({ post, onSelect , onToggleActive}: { post: any, onSelect: (post: any) => void , onToggleActive?: (post: any,active: boolean) => void }) {
   const formattedDate = post.updated_at
     ? (() => {
@@ -64,10 +65,10 @@ export default function BlogListItem({ post, onSelect , onToggleActive}: { post:
       {typeof post.active === "boolean" && onToggleActive && (
         <div className="mt-4 flex lg:justify-end justify-center">
           <button
-            className={`px-4 py-2 rounded ${post.active ? "bg-red-600 text-white" : "bg-green-400 text-white"} font-semibold mr-2`}
+            className={`px-4 py-2 rounded ${post.active ? "bg-red-600 text-white" : "bg-green-400 text-white"} font-semibold mr-2 flex flex-row items-center gap-3`}
             onClick={() => onToggleActive(post, !post.active)}
           >
-            {post.active ? "Set Inactive" : "Set Active"}
+            <span>{post.active ? <MdDesktopAccessDisabled /> : <VscVmActive />}</span>{post.active ? "Set Inactive" : "Set Active"}
           </button>
         </div>
       )}

@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../../db/supabaseClient";
 
-export default function SideBar({ onFilter }: { onFilter: (filter: { category?: string, tag?: string }) => void }) {
+export default function SideBar({ onFilter, onItemClick }: { onFilter: (filter: { category?: string, tag?: string }) => void, onItemClick?: () => void }) {
   const [categories, setCategories] = useState<string[]>([]);
   const [tags, setTags] = useState<string[]>([]);
 
   useEffect(() => {
-    supabase.from('posts').select('categories, tags').then(({ data }) => {
+    supabase.from('posts').select('categories, tags').eq('active', true).then(({ data }) => {
       if (!data) return;
       const uniqueCategories = Array.from(new Set(data.map((p: any) => p.categories).filter(Boolean)));
       setCategories(uniqueCategories);
@@ -20,14 +20,17 @@ export default function SideBar({ onFilter }: { onFilter: (filter: { category?: 
   }, []);
 
   return (
-    <aside className="lg:w-1/5 sm:w-1/3 dark:text-white p-6">
+    <aside className=" dark:text-white p-6">
       <h2 className="text-2x1 font-bold mb-2">Categories</h2>
       <ul>
         {categories.map(cat => (
           <li key={cat}>
             <button
-              className="text-left text-lg w-full py-1 px-2 hover:bg-gray-200 dark:hover:bg-gray-700 rounded"
-              onClick={() => onFilter({ category: cat })}
+              className="w-full text-left text-lg py-1 px-2 hover:bg-gray-200 dark:hover:bg-gray-700 rounded"
+              onClick={() => {
+                onFilter({ category: cat });
+                if (onItemClick) onItemClick();
+              }}
             >
               {cat}
             </button>
@@ -39,8 +42,11 @@ export default function SideBar({ onFilter }: { onFilter: (filter: { category?: 
         {tags.map(tag => (
           <li key={tag}>
             <button
-              className="text-left text-lg w-full py-1 px-2 hover:bg-gray-200 dark:hover:bg-gray-700 rounded"
-              onClick={() => onFilter({ tag })}
+              className="w-full text-left text-lg py-1 px-2 hover:bg-gray-200 dark:hover:bg-gray-700 rounded"
+              onClick={() => {
+                onFilter({ tag });
+                if (onItemClick) onItemClick();
+              }}
             >
               {tag}
             </button>

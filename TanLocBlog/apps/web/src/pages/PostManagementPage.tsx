@@ -84,10 +84,10 @@ export default function PostManagementPage() {
         />
       ) : (
         <>
-          <h1 className="text-2xl font-bold mb-6">Your Posts</h1>
+          <h1 className="text-2xl font-bold mb-6 dark:text-white">Your Posts</h1>
           <div className = "flex flex-row justify-between">
             <button
-              className="mb-6 px-4 py-2 rounded bg-blue-600 text-white font-semibold hover:bg-blue-700"
+              className="mb-6 ml-4 px-4 py-2 rounded bg-blue-600 text-white font-semibold hover:bg-blue-700"
               onClick={handleCreateClick}
             >
               Create Post
@@ -95,7 +95,7 @@ export default function PostManagementPage() {
             <SearchBar
               value={search}
               onChange={setSearch}
-              className="mb-6 w-full"
+              className="mb-6 w-[40px]"
               placeholder="Search your posts..."
             />
           </div>

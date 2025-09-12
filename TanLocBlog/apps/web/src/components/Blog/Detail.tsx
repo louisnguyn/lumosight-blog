@@ -1,4 +1,4 @@
-
+import "./Detail.css"
 import { supabase } from "../../db/supabaseClient";
 import {useState, useEffect}from "react";
 import { BiArrowBack } from 'react-icons/bi';
@@ -66,7 +66,7 @@ export default function Detail({ post, onBack }: { post: any, onBack: () => void
           By {authorName}
         </div>
         {/* Content */}
-        <div className="text-lg text-gray-700 dark:text-gray-300 mb-4">{post.content}</div>
+        <div className="post-contenttext-lg text-gray-700 dark:text-gray-300 mb-4" dangerouslySetInnerHTML={{ __html: post.content }}></div>
         {/* Tags */}
         <div className="flex gap-2 mb-2 flex-wrap justify-end">
           {post.tags &&

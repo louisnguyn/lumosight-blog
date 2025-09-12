@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../../db/supabaseClient";
-
+import TipTap from "../RichTextEditor/TipTap"
 export default function PostForm({ mode, post, onSuccess, onCancel }: {
   mode: "create" | "edit";
   post?: any;
@@ -78,7 +78,7 @@ export default function PostForm({ mode, post, onSuccess, onCancel }: {
 
   return (
     <form onSubmit={handleSubmit} className="max-w-xl mx-auto p-6 bg-white dark:bg-gray-900 rounded-xl shadow-lg">
-      <h2 className="text-2xl font-bold mb-4 text-center">{mode === "create" ? "Create Post" : "Edit Post"}</h2>
+      <h2 className="text-2xl font-bold mb-4 text-center dark:text-white">{mode === "create" ? "Create Post" : "Edit Post"}</h2>
       <input
         type="text"
         placeholder="Title"
@@ -102,6 +102,7 @@ export default function PostForm({ mode, post, onSuccess, onCancel }: {
         rows={6}
         required
       />
+      <TipTap value={content} onChange={setContent}/>
       <input
         type="text"
         placeholder="Categories"
