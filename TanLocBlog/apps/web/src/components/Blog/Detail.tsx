@@ -4,6 +4,7 @@ import {useState, useEffect}from "react";
 import { BiArrowBack } from 'react-icons/bi';
 export default function Detail({ post, onBack }: { post: any, onBack: () => void }) {
     const [authorName, setAuthorName] = useState<string>("");
+    const [authorAvatar, setAuthorAvatar] = useState<string>("");
     if (!post) return null;
     const formattedDate = post.updated_at
       ? (() => {
@@ -25,13 +26,15 @@ export default function Detail({ post, onBack }: { post: any, onBack: () => void
             if (post?.author_id) {
                   const { data, error } = await supabase
                   .from("profile")
-                  .select("full_name")
+                  .select("full_name, avatar_url")
                   .eq("user_id", post.author_id)
                   .single();
                   if (data && data.full_name) {
                   setAuthorName(data.full_name);
+                  setAuthorAvatar(data.avatar_url ?? "/profile.jpeg");
               } else {
                   setAuthorName("Unknown Author");
+                  setAuthorAvatar("/profile.jpeg");
               }
             }
     }
@@ -62,8 +65,13 @@ export default function Detail({ post, onBack }: { post: any, onBack: () => void
         </div>
         {/* Title */}
         <h2 className="text-3xl font-bold text-blue-600 mb-2">{post.title}</h2>
-        <div className="mb-2 text-base text-gray-500 font-medium">
-          By {authorName}
+        <div className="flex mb-2 text-base text-gray-500 font-medium items-center">
+          <img
+            src={authorAvatar}
+            alt={authorName}
+            className="w-8 h-8 rounded-full object-cover mr-2 bg-gray-200"
+          />
+          {authorName}
         </div>
         {/* Content */}
         <div className="post-contenttext-lg text-gray-700 dark:text-gray-300 mb-4" dangerouslySetInnerHTML={{ __html: post.content }}></div>

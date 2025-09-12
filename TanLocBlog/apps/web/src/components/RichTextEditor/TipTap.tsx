@@ -29,8 +29,9 @@ import { FaAlignJustify } from 'react-icons/fa';
 import { FaAlignLeft } from 'react-icons/fa';
 import { FaAlignRight } from 'react-icons/fa';
 import { CharacterCount } from '@tiptap/extensions'
+import Placeholder from '@tiptap/extension-placeholder'
 import "./TipTap.css"
-export default function TipTap({ value, onChange }: { value: string; onChange: (content: string) => void }) {
+export default function TipTap({ value, onChange , placeholder = "" }: { value: string; onChange: (content: string) => void;placeholder?: string }) {
       const [wordCount, setWordCount] = useState(0);
   const editor = useEditor({
     extensions: [
@@ -53,6 +54,7 @@ export default function TipTap({ value, onChange }: { value: string; onChange: (
             types: ['heading', 'paragraph'],
         }),
         CharacterCount,
+        Placeholder.configure({ placeholder }),
     ],
     content: value,
     onUpdate: ({ editor }) => {

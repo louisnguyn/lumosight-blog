@@ -4,7 +4,9 @@ import LoginPage from "./pages/LoginPage"
 import SignupPage from "./pages/SignupPage"
 import ThemeSwitch from "./components/ThemeSwitch/ThemeSwitch";
 import PostManagementPage from "./pages/PostManagementPage"
-// import { Analytics } from "@vercel/analytics/react"
+import UserInformationPage from "./pages/UserInformationPage"
+// import ChangePasswordPage from "./pages/ChangePasswordPage"
+import { Analytics } from "@vercel/analytics/react"
 function App() {
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950 transition-colors flex flex-col">
@@ -15,8 +17,10 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/post-management" element={<PostManagementPage />} />
+          <Route path="/user-info" element={<UserInformationPage />} />
+          {/* <Route path="/change-password" element={<ChangePasswordPage />} /> */}
         </Routes>
-        {/* <Analytics/> */}
+        <Analytics/>
       </BrowserRouter>
     </div>
   )

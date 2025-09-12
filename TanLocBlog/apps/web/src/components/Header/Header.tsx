@@ -14,6 +14,7 @@ export default function Header({ onSearch }: { onSearch?: (search?: string) => v
     const { theme, toggleTheme } = useTheme();
     const [user, setUser] = useState<any>(null);
     const [dropdownOpen, setDropdownOpen] = useState(false);
+    const [profileAvatar, setProfileAvatar] = useState<string>("");
     const navigate = useNavigate();
     const [profileName, setProfileName] = useState<string>("");
     useEffect(() => {
@@ -22,13 +23,15 @@ export default function Header({ onSearch }: { onSearch?: (search?: string) => v
             if (data?.user?.id) {
                 const { data: profile, error } = await supabase
                     .from("profile")
-                    .select("full_name")
+                    .select("full_name, avatar_url")
                     .eq("user_id", data.user.id)
                     .single();
                 if (profile && profile.full_name) {
                     setProfileName(profile.full_name);
+                    setProfileAvatar(profile.avatar_url)
                 } else {
                     setProfileName("unknown user");
+                    setProfileAvatar("");
                 }
             }
         });
@@ -62,28 +65,40 @@ export default function Header({ onSearch }: { onSearch?: (search?: string) => v
             )}
             <nav className="flex items-center justify-center relative">
                 {!user ? (
-                    <NavLink to="/login" className="ml-4 hover:underline">Login</NavLink>
+                    <NavLink to="/login" className="ml-4 px-4 py-2 rounded bg-white text-blue-600 font-semibold shadow hover:bg-blue-100 transition-colors dark:bg-gray-700 dark:text-white dark:hover:bg-gray-900">Login</NavLink>
                 ) : (
                     <div className=" inline-block relative">
                         <button
                             onClick={() => setDropdownOpen((open) => !open)}
                             className="px-3 py-2 rounded bg-white dark:bg-gray-700 dark:text-white text-black cursor-pointer min-w-[220px] flex items-center justify-left "
                         >
-                            <span><FaUser  className="mr-5 ml-2" /></span>
+                            {profileAvatar ? (
+                                <img
+                                    src={profileAvatar}
+                                    alt="Avatar"
+                                    className="w-8 h-8 rounded-full object-cover mr-3"
+                                />
+                            ) : (
+                                <img
+                                    src="/profile.jpeg"
+                                    alt="Avatar"
+                                    className="w-8 h-8 rounded-full object-cover mr-3"
+                                />
+                            )}
                             <span>{profileName}</span>
                         </button>
                         {dropdownOpen && (
                             <div className="absolute left-0 bottom-0 translate-y-full w-full dark:text-white text-black right-6 mt-2 w-48 bg-white dark:bg-gray-800 rounded shadow-lg z-10">
                                 <button
                                     className=" w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center justify-left "
-                                    onClick={() => {/* TODO: implement change password */ setDropdownOpen(false); }}
+                                    onClick={() => {navigate("/change-password"); setDropdownOpen(false); }}
                                 >
                                     <span  className="mr-5 ml-2"><CgPassword/></span>
                                     <span>Change Password</span>
                                 </button>
                                 <button
                                     className="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center justify-left"
-                                    onClick={() => {/* TODO: implement change info */ setDropdownOpen(false); }}
+                                    onClick={() => { navigate("/user-info"); setDropdownOpen(false); }}
                                 >
                                     <span  className="mr-5 ml-2"><FaUserEdit/></span>
                                     User Information

@@ -94,15 +94,15 @@ export default function PostForm({ mode, post, onSuccess, onCancel }: {
         onChange={e => setDescription(e.target.value)}
         className="w-full mb-3 px-3 py-2 rounded border bg-white dark:bg-gray-800 dark:text-white"
       />
-      <textarea
+      {/* <textarea
         placeholder="Content"
         value={content}
         onChange={e => setContent(e.target.value)}
         className="w-full mb-3 px-3 py-2 rounded border bg-white dark:bg-gray-800 dark:text-white"
         rows={6}
         required
-      />
-      <TipTap value={content} onChange={setContent}/>
+      /> */}
+      <TipTap value={content} onChange={setContent} placeholder="Write your post content here..."/>
       <input
         type="text"
         placeholder="Categories"
