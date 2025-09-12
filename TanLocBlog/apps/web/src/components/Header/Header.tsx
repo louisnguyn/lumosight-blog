@@ -39,6 +39,7 @@ export default function Header({ onSearch }: { onSearch?: (search?: string) => v
     const handleLogout = async () => {
         await supabase.auth.signOut();
         setDropdownOpen(false);
+        navigate("/")
         window.location.reload();
     };
     return (
@@ -70,7 +71,7 @@ export default function Header({ onSearch }: { onSearch?: (search?: string) => v
                     <div className=" inline-block relative">
                         <button
                             onClick={() => setDropdownOpen((open) => !open)}
-                            className="px-3 py-2 rounded bg-white dark:bg-gray-700 dark:text-white text-black cursor-pointer min-w-[220px] flex items-center justify-left "
+                            className="px-4 py-2 rounded bg-white dark:bg-gray-700 dark:text-white text-black cursor-pointer min-w-[220px] flex items-center justify-left "
                         >
                             {profileAvatar ? (
                                 <img

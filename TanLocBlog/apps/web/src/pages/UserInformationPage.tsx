@@ -30,9 +30,9 @@ export default function UserInformationPage() {
           setBio(data.bio ?? "");
           setAvatarUrl(data.avatar_url ?? "");
           setPhone(data.phone ?? "");
-          setEmail(data.email ?? userData.user.email ?? "");
+          setEmail(data.email ?? (userData.user ? userData.user.email : "") ?? "");
         } else {
-          setEmail(userData.user.email ?? "");
+          setEmail(userData.user?.email ?? "");
         }
         if (error) setError(error.message);
       }
@@ -70,7 +70,7 @@ export default function UserInformationPage() {
   return (
     <div className="min-h-screen flex flex-col bg-white dark:bg-gray-950">
       <Header />
-      <div className="flex-1 max-w-xl mx-auto py-8 w-full">
+      <div className="flex-1 max-w-xl mx-auto py-8 w-full mt-10">
         <h1 className="text-2xl font-bold mb-6 dark:text-white">User Information</h1>
         {loading ? (
           <div className="text-gray-500">Loading...</div>

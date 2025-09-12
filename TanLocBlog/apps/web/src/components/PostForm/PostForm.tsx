@@ -79,7 +79,9 @@ export default function PostForm({ mode, post, onSuccess, onCancel }: {
   return (
     <form onSubmit={handleSubmit} className="max-w-xl mx-auto p-6 bg-white dark:bg-gray-900 rounded-xl shadow-lg">
       <h2 className="text-2xl font-bold mb-4 text-center dark:text-white">{mode === "create" ? "Create Post" : "Edit Post"}</h2>
+      <label className="block mb-1 font-semibold dark:text-white" htmlFor="title">Title</label>
       <input
+        id="title"
         type="text"
         placeholder="Title"
         value={title}
@@ -87,7 +89,9 @@ export default function PostForm({ mode, post, onSuccess, onCancel }: {
         className="w-full mb-3 px-3 py-2 rounded border bg-white dark:bg-gray-800 dark:text-white"
         required
       />
+      <label className="block mb-1 font-semibold dark:text-white" htmlFor="description">Description</label>
       <input
+        id="description"
         type="text"
         placeholder="Description"
         value={description}
@@ -102,22 +106,29 @@ export default function PostForm({ mode, post, onSuccess, onCancel }: {
         rows={6}
         required
       /> */}
+      <label className="block mb-1 font-semibold dark:text-white" htmlFor="content">Content</label>
       <TipTap value={content} onChange={setContent} placeholder="Write your post content here..."/>
+      <label className="block mb-1 font-semibold dark:text-white" htmlFor="categories">Categories</label>
       <input
+        id="categories"
         type="text"
         placeholder="Categories"
         value={categories}
         onChange={e => setCategories(e.target.value)}
         className="w-full mb-3 px-3 py-2 rounded border bg-white dark:bg-gray-800 dark:text-white"
       />
+      <label className="block mb-1 font-semibold dark:text-white" htmlFor="tags">Tags (comma separated)</label>
       <input
+        id="tags"
         type="text"
         placeholder="Tags (comma separated)"
         value={tags}
         onChange={e => setTags(e.target.value)}
         className="w-full mb-3 px-3 py-2 rounded border bg-white dark:bg-gray-800 dark:text-white"
       />
+      <label className="block mb-1 font-semibold dark:text-white" htmlFor="image">Image URL</label>
       <input
+          id="image"
         type="text"
         placeholder="Image URL"
         value={image}

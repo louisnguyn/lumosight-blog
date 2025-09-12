@@ -43,16 +43,26 @@ function MainPage() {
   const handleHeaderSearch = (search?: string) => {
     fetchPosts({ search });
   };
-  const handleSelectPost = (post: any) => {
-    setSelectedPost(post);
+  const handleSelectPost = async (post: any) => {
+    await supabase
+    .from("posts")
+    .update({ views: (post.views ?? 0) + 1 })
+    .eq("id", post.id);
+    setSelectedPost({ ...post, views: (post.views ?? 0) + 1 });
+    setPosts(prev =>
+    prev.map(p =>
+      p.id === post.id ? { ...p, views: (p.views ?? 0) + 1 } : p
+    )
+  );
   };
   const handleBackToList = () => {
     setSelectedPost(null);
+    fetchPosts(); 
   };
   return (
     <div className="flex flex-col min-h-screen">
       <Header onSearch={handleHeaderSearch} />
-      <div className="flex flex-row flex-1 sm:relative lg:px-50">
+      <div className="flex flex-row flex-1 relative lg:px-50">
         {/* <SideBar onFilter={fetchPosts} /> */}
         <button
           className="lg:hidden absolute top-6 right-4 z-40 p-2 rounded bg-blue-600 text-white"

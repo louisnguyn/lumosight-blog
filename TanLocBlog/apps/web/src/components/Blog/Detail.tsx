@@ -2,9 +2,15 @@ import "./Detail.css"
 import { supabase } from "../../db/supabaseClient";
 import {useState, useEffect}from "react";
 import { BiArrowBack } from 'react-icons/bi';
+import FingerprintJS from '@fingerprintjs/fingerprintjs';
+import { FaHeart } from 'react-icons/fa';
+import { FaRegHeart } from 'react-icons/fa';
 export default function Detail({ post, onBack }: { post: any, onBack: () => void }) {
     const [authorName, setAuthorName] = useState<string>("");
     const [authorAvatar, setAuthorAvatar] = useState<string>("");
+    const [liked, setLiked] = useState(false);
+    const [likes, setLikes] = useState(post.likes || 0);
+    const [userId, setUserId] = useState<string | null>(null);
     if (!post) return null;
     const formattedDate = post.updated_at
       ? (() => {
@@ -40,6 +46,44 @@ export default function Detail({ post, onBack }: { post: any, onBack: () => void
     }
     fetchAuthor();
   }, [post?.author_id]);
+  useEffect(() => {
+    async function fetchUser() {
+      const { data: userData } = await supabase.auth.getUser();
+      setUserId(userData?.user?.id ?? null);
+    }
+    fetchUser();
+  }, []);
+
+  useEffect(() => {
+    async function checkLiked() {
+      if (!post?.id || !userId) {
+        setLiked(false);
+        return;
+      }
+      const { data } = await supabase
+        .from("likes")
+        .select("*")
+        .match({ post_id: post.id, user_id: userId })
+        .maybeSingle();
+      setLiked(!!data);
+    }
+    checkLiked();
+  }, [post?.id, userId]);
+
+  const handleLike = async () => {
+    if (!userId || !post?.id) return;
+    if (liked) {
+      await supabase.from("likes").delete().match({ post_id: post.id, user_id: userId });
+      setLiked(false);
+      setLikes(likes - 1);
+      await supabase.from("posts").update({ likes: likes - 1 }).eq("id", post.id);
+    } else {
+      await supabase.from("likes").insert([{ post_id: post.id, user_id: userId }]);
+      setLiked(true);
+      setLikes(likes + 1);
+      await supabase.from("posts").update({ likes: likes + 1 }).eq("id", post.id);
+    }
+  };
   return (
     <div className="max-w-3xl mx-auto p-6 bg-white dark:bg-gray-900 rounded-xl shadow-lg">
       <button onClick={onBack} className="mb-6 text-blue-600 underline text-lg font-medium">
@@ -67,7 +111,7 @@ export default function Detail({ post, onBack }: { post: any, onBack: () => void
         <h2 className="text-3xl font-bold text-blue-600 mb-2">{post.title}</h2>
         <div className="flex mb-2 text-base text-gray-500 font-medium items-center">
           <img
-            src={authorAvatar}
+            src={authorAvatar || "/profile.jpeg"}
             alt={authorName}
             className="w-8 h-8 rounded-full object-cover mr-2 bg-gray-200"
           />
@@ -90,7 +134,19 @@ export default function Detail({ post, onBack }: { post: any, onBack: () => void
         {/* Views and Likes */}
         <div className="flex items-center gap-6 mt-2 text-gray-500 text-base justify-between">
           <span>{post.views || 0} views</span>
-          <span>{post.likes || 0} likes</span>
+          {userId ? (
+            <button
+              className="flex items-center gap-2 px-3 py-1 rounded  font-semibold"
+              onClick={handleLike}
+            >
+              {liked ? <FaHeart className="text-red-500" /> : <FaRegHeart />}
+              {likes} likes
+            </button>
+          ) : (
+            <span className="flex items-center gap-2 px-3 py-1 rounded  font-semibold">
+              {likes} likes
+            </span>
+          )}
         </div>
       </div>
     </div>

@@ -5,7 +5,7 @@ import SignupPage from "./pages/SignupPage"
 import ThemeSwitch from "./components/ThemeSwitch/ThemeSwitch";
 import PostManagementPage from "./pages/PostManagementPage"
 import UserInformationPage from "./pages/UserInformationPage"
-// import ChangePasswordPage from "./pages/ChangePasswordPage"
+import ChangePasswordPage from "./pages/ChangePasswordPage"
 import { Analytics } from "@vercel/analytics/react"
 function App() {
   return (
@@ -18,7 +18,7 @@ function App() {
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/post-management" element={<PostManagementPage />} />
           <Route path="/user-info" element={<UserInformationPage />} />
-          {/* <Route path="/change-password" element={<ChangePasswordPage />} /> */}
+          <Route path="/change-password" element={<ChangePasswordPage />} />
         </Routes>
         <Analytics/>
       </BrowserRouter>
