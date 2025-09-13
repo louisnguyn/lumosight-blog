@@ -43,7 +43,14 @@ export default function BlogListItem({ post, onSelect , onToggleActive}: { post:
           {post.title}
         </h3>
         <p className="text-lg text-gray-700 dark:text-gray-300 mb-3">
-          {post.description || post.content}
+          {post.description
+            ? post.description
+            : (
+                <span
+                  dangerouslySetInnerHTML={{ __html: post.content }}
+                />
+              )
+          }
         </p>
         {/* Tags */}
         <div className="flex gap-2 mb-2 flex-wrap">
