@@ -110,6 +110,7 @@ export default function PostManagementPage() {
                   key={post.id}
                   post={post}
                   onSelect={() => handleEditClick(post)}
+                  isManagement
                   onToggleActive={handleToggleActive}
                 />
               ))}

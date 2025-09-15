@@ -1,7 +1,7 @@
 import { VscVmActive } from 'react-icons/vsc';
 import { MdDesktopAccessDisabled } from 'react-icons/md';
 import { useNavigate } from "react-router-dom";
-export default function BlogListItem({ post, onSelect , onToggleActive}: { post: any, onSelect: (post: any) => void , onToggleActive?: (post: any,active: boolean) => void }) {
+export default function BlogListItem({ post, onSelect , onToggleActive , isManagement = false}: { post: any, onSelect: (post: any) => void , onToggleActive?: (post: any,active: boolean) => void,  isManagement?: boolean }) {
   if (!post) return null; 
   const formattedDate = post.updated_at
     ? (() => {
@@ -41,7 +41,7 @@ export default function BlogListItem({ post, onSelect , onToggleActive}: { post:
         </div>
         <h3
           className="text-2xl font-bold text-blue-600 mb-2 cursor-pointer hover:underline"
-          onClick={() => navigate(`/post/${post.id}`)}
+          onClick={() => isManagement ? onSelect(post) : navigate(`/post/${post.id}`)}
         >
           {post.title}
         </h3>

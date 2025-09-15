@@ -6,7 +6,8 @@ import ThemeSwitch from "./components/ThemeSwitch/ThemeSwitch";
 import PostManagementPage from "./pages/PostManagementPage"
 import UserInformationPage from "./pages/UserInformationPage"
 import ChangePasswordPage from "./pages/ChangePasswordPage"
-// import { Analytics } from "@vercel/analytics/react"
+import PrivacyPage from "./pages/PrivacyPage"
+import { Analytics } from "@vercel/analytics/react"
 import PostDetailPage from "./pages/DetailPage"
 function App() {
   return (
@@ -21,8 +22,9 @@ function App() {
           <Route path="/post-management" element={<PostManagementPage />} />
           <Route path="/user-info" element={<UserInformationPage />} />
           <Route path="/change-password" element={<ChangePasswordPage />} />
+          <Route path="/privacy" element={<PrivacyPage />} />
         </Routes>
-        {/* <Analytics/> */}
+        <Analytics/>
       </BrowserRouter>
     </div>
   )

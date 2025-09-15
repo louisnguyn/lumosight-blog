@@ -5,12 +5,28 @@ import { BiArrowBack } from 'react-icons/bi';
 // import FingerprintJS from '@fingerprintjs/fingerprintjs';
 import { FaHeart } from 'react-icons/fa';
 import { FaRegHeart } from 'react-icons/fa';
+import { FaShareSquare } from 'react-icons/fa';
 export default function Detail({ post, onBack }: { post: any, onBack: () => void }) {
     const [authorName, setAuthorName] = useState<string>("");
     const [authorAvatar, setAuthorAvatar] = useState<string>("");
     const [liked, setLiked] = useState(false);
     const [likes, setLikes] = useState(0);
     const [userId, setUserId] = useState<string | null>(null);
+    const [copied, setCopied] = useState(false);
+    // useEffect(() => {
+    //   if (!post?.id) return;
+    //   const viewKey = `post_view_${post.id}`;
+    //   const lastViewed = localStorage.getItem(viewKey);
+    //   const now = Date.now();
+    //   if (!lastViewed || now - Number(lastViewed) > 1800 * 1000) {
+    //     // Update views in DB
+    //     supabase
+    //       .from("posts")
+    //       .update({ views: (post.views ?? 0) + 1 })
+    //       .eq("id", post.id);
+    //     localStorage.setItem(viewKey, String(now));
+    //   }
+    // }, [post?.id]);
     useEffect(() => {
       if (post && typeof post.likes === "number") {
         setLikes(post.likes);
@@ -89,8 +105,14 @@ export default function Detail({ post, onBack }: { post: any, onBack: () => void
             .padStart(2, "0")}/${d.getFullYear()}`;
         })()
       : "";
+  const handleShare = async () => {
+    const url = window.location.origin + "/post/" + post.id;
+    await navigator.clipboard.writeText(url);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 3000);
+  };
   return (
-    <div className="mx-auto mt-5 mb-5 p-4 sm:p-8 md:p-12 lg:p-16 bg-white dark:bg-gray-900 rounded-xl shadow-lg max-w-full ">
+    <div className="mx-auto mt-5 mb-5 p-4 sm:p-8 md:p-12 lg:p-16 bg-white dark:bg-gray-900 rounded-xl shadow-lg max-w-full lg:max-w-6xl md:max-w-5x1">
       <button onClick={onBack} className="mb-6 text-blue-600 text-lg font-medium">
         <BiArrowBack className="inline-block mr-2" /> Back to list
       </button>
@@ -139,6 +161,7 @@ export default function Detail({ post, onBack }: { post: any, onBack: () => void
         {/* Views and Likes */}
         <div className="flex items-center gap-6 mt-2 text-gray-500 text-base justify-between">
           <span>{post.views || 0} views</span>
+          <div className="flex flex-row">
           {userId ? (
             <button
               className="flex items-center gap-2 px-3 py-1 rounded font-semibold"
@@ -152,6 +175,14 @@ export default function Detail({ post, onBack }: { post: any, onBack: () => void
               {likes} likes
             </span>
           )}
+          <button
+            className="flex items-center gap-2 px-3 py-1 rounded font-semibold bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700"
+            onClick={handleShare}
+          >
+            <FaShareSquare />
+            {copied ? "Copied!" : "Share"}
+          </button>
+          </div>
         </div>
       </div>
     </div>
