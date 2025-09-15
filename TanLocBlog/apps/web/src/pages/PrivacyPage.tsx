@@ -37,7 +37,7 @@ export default function PrivacyPage() {
           <li>You can request deletion of your account and data at any time by contacting me or Tan Loc Nguyen.</li>
         </ul>
         <p className="mt-8 text-gray-600 dark:text-gray-400">
-          If you have questions about this policy, please contact us at <strong>louis.nguyen@gmail.com</strong>.
+          If you have questions about this policy, please contact us at <strong>louis.nguyn@gmail.com</strong>.
         </p>
       </main>
       <Footer />
