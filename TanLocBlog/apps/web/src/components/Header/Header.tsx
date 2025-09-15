@@ -45,13 +45,13 @@ export default function Header({ onSearch }: { onSearch?: (search?: string) => v
     return (
         <header className="w-full bg-blue-600 dark:bg-gray-900 text-white py-4 px-6 flex items-center justify-between">
             <div>
-                <Link to="/">
+                <NavLink to="/">
                     { theme === "light" ? (
                         <img src="./logo_transparent.png" className="h-20" />
                     ) : (
                         <img src="./logo.png" className="h-20" />
                     )}
-                </Link>
+                </NavLink>
             </div>
             {typeof onSearch === "function" && (
             <div className="hidden lg:block">

@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import { supabase } from '../db/supabaseClient';
 import { useEffect, useState } from 'react';
 import Header from "../components/Header/Header"
@@ -8,63 +9,43 @@ import Detail from "../components/Blog/Detail";
 import SearchBar from "../components/SearchBar/SearchBar";
 import { GiHamburgerMenu } from 'react-icons/gi';
 import { AiOutlineClose } from 'react-icons/ai';
+
 function MainPage() {
-  // const [status, setStatus] = useState('Connecting...');
   const [posts, setPosts] = useState<any[]>([]);
-  const [selectedPost, setSelectedPost] = useState<any>(null);
   const [search, setSearch] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const navigate = useNavigate();
+
   useEffect(() => {
     fetchPosts();
   }, []);
 
   async function fetchPosts(filter?: { category?: string, tag?: string, search?: string }) {
-    // setStatus('Loading...');
     let query = supabase.from('posts').select('*').eq('active', true);
-    if (filter?.category) {
-      query = query.eq('categories', filter.category);
-    }
-    if (filter?.tag) {
-      query = query.ilike('tags', `%${filter.tag}%`);
-    }
-    if (filter?.search) {
-      query = query.or(`title.ilike.%${filter.search}%,content.ilike.%${filter.search}%`);
-    }
+    if (filter?.category) query = query.eq('categories', filter.category);
+    if (filter?.tag) query = query.ilike('tags', `%${filter.tag}%`);
+    if (filter?.search) query = query.or(`title.ilike.%${filter.search}%,content.ilike.%${filter.search}%`);
     const { data, error } = await query;
-    if (error) {
-      // setStatus(`Error: ${error.message}`);
-      setPosts([]);
-    } else {
-      setPosts(data ?? []);
-      // setStatus('Loaded');
-    }
-    setSelectedPost(null);
+    setPosts(error ? [] : data ?? []);
   }
+
   const handleHeaderSearch = (search?: string) => {
     fetchPosts({ search });
   };
+
   const handleSelectPost = async (post: any) => {
     await supabase
-    .from("posts")
-    .update({ views: (post.views ?? 0) + 1 })
-    .eq("id", post.id);
-    setSelectedPost({ ...post, views: (post.views ?? 0) + 1 });
-    setPosts(prev =>
-    prev.map(p =>
-      p.id === post.id ? { ...p, views: (p.views ?? 0) + 1 } : p
-    )
-  );
+      .from("posts")
+      .update({ views: (post.views ?? 0) + 1 })
+      .eq("id", post.id);
+    navigate(`/post/${post.id}`);
   };
-  const handleBackToList = () => {
-    setSelectedPost(null);
-    fetchPosts(); 
-  };
+
   return (
     <div className="flex flex-col min-h-screen">
       <Header onSearch={handleHeaderSearch} />
       <div className="flex flex-row flex-1 relative lg:px-50">
-        {/* <SideBar onFilter={fetchPosts} /> */}
-        <button
+         <button
           className="lg:hidden absolute top-6 right-4 z-40 p-2 rounded bg-blue-600 text-white"
           onClick={() => setSidebarOpen(open => !open)}
           aria-label="Toggle sidebar"
@@ -81,7 +62,7 @@ function MainPage() {
             } lg:static lg:block lg:opacity-100 lg:translate-x-0 transition-all duration-500 ease-in-out sm:w-1/3 lg:w-1/5`}
           >
           <SideBar onFilter={fetchPosts} onItemClick={() => setSidebarOpen(false)} />
-        </div>
+        </div> 
         <main className=" lg:w-4/5 sm:w-2/3 p-6 dark:text-white">
           <div className="flex justify-center lg:hidden mb-4">
             <SearchBar
@@ -92,18 +73,12 @@ function MainPage() {
               }}
             />
           </div>
-          {/* <h1 className="text-2xl font-bold">Supabase Connection Status</h1>
-          <p className="text-lg">{status}</p> */}
-          {selectedPost ? (
-            <Detail post={selectedPost} onBack={handleBackToList} />
-          ) : (
-            <BlogList posts={posts} onSelect={handleSelectPost} />
-          )}
+          <BlogList posts={posts} onSelect={handleSelectPost} />
         </main>
       </div>
       <Footer />
     </div>
-  )
+  );
 }
 
-export default MainPage
+export default MainPage;

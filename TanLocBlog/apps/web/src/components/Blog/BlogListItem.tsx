@@ -1,6 +1,8 @@
 import { VscVmActive } from 'react-icons/vsc';
 import { MdDesktopAccessDisabled } from 'react-icons/md';
+import { useNavigate } from "react-router-dom";
 export default function BlogListItem({ post, onSelect , onToggleActive}: { post: any, onSelect: (post: any) => void , onToggleActive?: (post: any,active: boolean) => void }) {
+  if (!post) return null; 
   const formattedDate = post.updated_at
     ? (() => {
         const d = new Date(post.updated_at);
@@ -16,6 +18,7 @@ export default function BlogListItem({ post, onSelect , onToggleActive}: { post:
           .padStart(2, "0")}/${d.getFullYear()}`;
       })()
     : "";
+  const navigate = useNavigate();
   return (
     <div className="flex flex-col lg:flex-row gap-8 py-8 border-b ml-10 mr-10">
       {/* Image */}
@@ -38,7 +41,7 @@ export default function BlogListItem({ post, onSelect , onToggleActive}: { post:
         </div>
         <h3
           className="text-2xl font-bold text-blue-600 mb-2 cursor-pointer hover:underline"
-          onClick={() => onSelect(post)}
+          onClick={() => navigate(`/post/${post.id}`)}
         >
           {post.title}
         </h3>

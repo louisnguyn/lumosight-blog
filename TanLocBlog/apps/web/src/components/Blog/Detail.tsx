@@ -2,47 +2,36 @@ import "./Detail.css"
 import { supabase } from "../../db/supabaseClient";
 import {useState, useEffect}from "react";
 import { BiArrowBack } from 'react-icons/bi';
-import FingerprintJS from '@fingerprintjs/fingerprintjs';
+// import FingerprintJS from '@fingerprintjs/fingerprintjs';
 import { FaHeart } from 'react-icons/fa';
 import { FaRegHeart } from 'react-icons/fa';
 export default function Detail({ post, onBack }: { post: any, onBack: () => void }) {
     const [authorName, setAuthorName] = useState<string>("");
     const [authorAvatar, setAuthorAvatar] = useState<string>("");
     const [liked, setLiked] = useState(false);
-    const [likes, setLikes] = useState(post.likes || 0);
+    const [likes, setLikes] = useState(0);
     const [userId, setUserId] = useState<string | null>(null);
-    if (!post) return null;
-    const formattedDate = post.updated_at
-      ? (() => {
-          const d = new Date(post.updated_at);
-          return `${d.getDate().toString().padStart(2, "0")}/${(d.getMonth() + 1)
-            .toString()
-            .padStart(2, "0")}/${d.getFullYear()}`;
-        })()
-      : post.created_at
-      ? (() => {
-          const d = new Date(post.created_at);
-          return `${d.getDate().toString().padStart(2, "0")}/${(d.getMonth() + 1)
-            .toString()
-            .padStart(2, "0")}/${d.getFullYear()}`;
-        })()
-      : "";
     useEffect(() => {
-        async function fetchAuthor() {
-            if (post?.author_id) {
-                  const { data, error } = await supabase
-                  .from("profile")
-                  .select("full_name, avatar_url")
-                  .eq("user_id", post.author_id)
-                  .single();
-                  if (data && data.full_name) {
-                  setAuthorName(data.full_name);
-                  setAuthorAvatar(data.avatar_url ?? "/profile.jpeg");
-              } else {
-                  setAuthorName("Unknown Author");
-                  setAuthorAvatar("/profile.jpeg");
-              }
-            }
+      if (post && typeof post.likes === "number") {
+        setLikes(post.likes);
+      }
+    }, [post]);
+    useEffect(() => {
+      async function fetchAuthor() {
+        if (post?.author_id) {
+              const { data, error } = await supabase
+              .from("profile")
+              .select("full_name, avatar_url")
+              .eq("user_id", post.author_id)
+              .single();
+              if (data && data.full_name) {
+              setAuthorName(data.full_name);
+              setAuthorAvatar(data.avatar_url ?? "/profile.jpeg");
+          } else {
+              setAuthorName("Unknown Author");
+              setAuthorAvatar("/profile.jpeg");
+          }
+        }
     }
     fetchAuthor();
   }, [post?.author_id]);
@@ -84,18 +73,34 @@ export default function Detail({ post, onBack }: { post: any, onBack: () => void
       await supabase.from("posts").update({ likes: likes + 1 }).eq("id", post.id);
     }
   };
+    if (!post) return null; 
+    const formattedDate = post.updated_at
+      ? (() => {
+          const d = new Date(post.updated_at);
+          return `${d.getDate().toString().padStart(2, "0")}/${(d.getMonth() + 1)
+            .toString()
+            .padStart(2, "0")}/${d.getFullYear()}`;
+        })()
+      : post.created_at
+      ? (() => {
+          const d = new Date(post.created_at);
+          return `${d.getDate().toString().padStart(2, "0")}/${(d.getMonth() + 1)
+            .toString()
+            .padStart(2, "0")}/${d.getFullYear()}`;
+        })()
+      : "";
   return (
-    <div className="max-w-3xl mx-auto p-6 bg-white dark:bg-gray-900 rounded-xl shadow-lg">
-      <button onClick={onBack} className="mb-6 text-blue-600 underline text-lg font-medium">
+    <div className="mx-auto mt-5 mb-5 p-4 sm:p-8 md:p-12 lg:p-16 bg-white dark:bg-gray-900 rounded-xl shadow-lg max-w-full ">
+      <button onClick={onBack} className="mb-6 text-blue-600 text-lg font-medium">
         <BiArrowBack className="inline-block mr-2" /> Back to list
       </button>
-      <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-8">
         {/* Blog Image */}
         <div className="flex justify-center">
           <img
             src={post.image || "/default-blog.jpg"}
             alt={post.title}
-            className="rounded-xl object-cover w-full max-w-xl h-[320px] bg-gray-200"
+            className="rounded-xl object-cover w-full max-w-2xl h-[320px] md:h-[420px] lg:h-[520px] bg-gray-200"
           />
         </div>
         {/* Meta Info */}
@@ -108,17 +113,17 @@ export default function Detail({ post, onBack }: { post: any, onBack: () => void
           )}
         </div>
         {/* Title */}
-        <h2 className="text-3xl font-bold text-blue-600 mb-2">{post.title}</h2>
+        <h2 className="text-4xl lg:text-5xl font-bold text-blue-600 mb-2">{post.title}</h2>
         <div className="flex mb-2 text-base text-gray-500 font-medium items-center">
           <img
             src={authorAvatar || "/profile.jpeg"}
             alt={authorName}
-            className="w-8 h-8 rounded-full object-cover mr-2 bg-gray-200"
+            className="w-10 h-10 rounded-full object-cover mr-2 bg-gray-200"
           />
           {authorName}
         </div>
         {/* Content */}
-        <div className="post-contenttext-lg text-gray-700 dark:text-gray-300 mb-4" dangerouslySetInnerHTML={{ __html: post.content }}></div>
+        <div className="post-content text-lg lg:text-xl text-gray-700 dark:text-gray-300 mb-4" dangerouslySetInnerHTML={{ __html: post.content }}></div>
         {/* Tags */}
         <div className="flex gap-2 mb-2 flex-wrap justify-end">
           {post.tags &&
@@ -136,14 +141,14 @@ export default function Detail({ post, onBack }: { post: any, onBack: () => void
           <span>{post.views || 0} views</span>
           {userId ? (
             <button
-              className="flex items-center gap-2 px-3 py-1 rounded  font-semibold"
+              className="flex items-center gap-2 px-3 py-1 rounded font-semibold"
               onClick={handleLike}
             >
               {liked ? <FaHeart className="text-red-500" /> : <FaRegHeart />}
               {likes} likes
             </button>
           ) : (
-            <span className="flex items-center gap-2 px-3 py-1 rounded  font-semibold">
+            <span className="flex items-center gap-2 px-3 py-1 rounded font-semibold">
               {likes} likes
             </span>
           )}
