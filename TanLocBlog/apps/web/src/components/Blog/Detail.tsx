@@ -5,7 +5,7 @@ import { BiArrowBack } from 'react-icons/bi';
 import { FaHeart } from 'react-icons/fa';
 import { FaRegHeart } from 'react-icons/fa';
 import { FaShareSquare } from 'react-icons/fa';
-// import Comments from "../Comments/Comments";
+import Comments from "../Comments/Comments";
 export default function Detail({ post, onBack }: { post: any, onBack: () => void }) {
     const [authorName, setAuthorName] = useState<string>("");
     const [authorAvatar, setAuthorAvatar] = useState<string>("");
@@ -171,7 +171,7 @@ export default function Detail({ post, onBack }: { post: any, onBack: () => void
           </div>
         </div>
       </div>
-      {/* <Comments postId={post.id} /> */}
+      <Comments postId={post.id} />
     </div>
   );
 }
