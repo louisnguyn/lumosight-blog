@@ -20,7 +20,7 @@ export default function BlogListItem({ post, onSelect , onToggleActive , isManag
     : "";
   const navigate = useNavigate();
   return (
-    <div className="flex flex-col lg:flex-row gap-8 py-8 border-b ml-10 mr-10">
+    <div className="flex flex-col lg:flex-row gap-8 py-8 border-b w-full mx-auto px-4">
       {/* Image */}
       <div className="flex-shrink-0 flex justify-center items-center">
         <img
@@ -30,7 +30,7 @@ export default function BlogListItem({ post, onSelect , onToggleActive , isManag
         />
       </div>
       {/* Content */}
-      <div className="flex flex-col flex-1">
+      <div className="flex flex-col flex-1 w-full">
         <div className="flex items-center gap-4 mb-2 justify-between">
           <span className="text-gray-500 text-base">    
             {formattedDate}

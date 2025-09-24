@@ -2,10 +2,10 @@ import "./Detail.css"
 import { supabase } from "../../db/supabaseClient";
 import {useState, useEffect}from "react";
 import { BiArrowBack } from 'react-icons/bi';
-// import FingerprintJS from '@fingerprintjs/fingerprintjs';
 import { FaHeart } from 'react-icons/fa';
 import { FaRegHeart } from 'react-icons/fa';
 import { FaShareSquare } from 'react-icons/fa';
+// import Comments from "../Comments/Comments";
 export default function Detail({ post, onBack }: { post: any, onBack: () => void }) {
     const [authorName, setAuthorName] = useState<string>("");
     const [authorAvatar, setAuthorAvatar] = useState<string>("");
@@ -13,20 +13,6 @@ export default function Detail({ post, onBack }: { post: any, onBack: () => void
     const [likes, setLikes] = useState(0);
     const [userId, setUserId] = useState<string | null>(null);
     const [copied, setCopied] = useState(false);
-    // useEffect(() => {
-    //   if (!post?.id) return;
-    //   const viewKey = `post_view_${post.id}`;
-    //   const lastViewed = localStorage.getItem(viewKey);
-    //   const now = Date.now();
-    //   if (!lastViewed || now - Number(lastViewed) > 1800 * 1000) {
-    //     // Update views in DB
-    //     supabase
-    //       .from("posts")
-    //       .update({ views: (post.views ?? 0) + 1 })
-    //       .eq("id", post.id);
-    //     localStorage.setItem(viewKey, String(now));
-    //   }
-    // }, [post?.id]);
     useEffect(() => {
       if (post && typeof post.likes === "number") {
         setLikes(post.likes);
@@ -170,21 +156,22 @@ export default function Detail({ post, onBack }: { post: any, onBack: () => void
               {liked ? <FaHeart className="text-red-500" /> : <FaRegHeart />}
               {likes} likes
             </button>
-          ) : (
-            <span className="flex items-center gap-2 px-3 py-1 rounded font-semibold">
-              {likes} likes
-            </span>
-          )}
-          <button
-            className="flex items-center gap-2 px-3 py-1 rounded font-semibold bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700"
-            onClick={handleShare}
-          >
-            <FaShareSquare />
-            {copied ? "Copied!" : "Share"}
-          </button>
+            ) : (
+              <span className="flex items-center gap-2 px-3 py-1 rounded font-semibold">
+                {likes} likes
+              </span>
+            )}
+            <button
+              className="flex items-center gap-2 px-3 py-1 rounded font-semibold bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700"
+              onClick={handleShare}
+            >
+              <FaShareSquare />
+              {copied ? "Copied!" : "Share"}
+            </button>
           </div>
         </div>
       </div>
+      {/* <Comments postId={post.id} /> */}
     </div>
   );
 }

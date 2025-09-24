@@ -24,7 +24,7 @@ function App() {
           <Route path="/change-password" element={<ChangePasswordPage />} />
           <Route path="/privacy" element={<PrivacyPage />} />
         </Routes>
-        <Analytics/>
+        <Analytics />
       </BrowserRouter>
     </div>
   )
