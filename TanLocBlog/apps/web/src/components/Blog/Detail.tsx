@@ -21,7 +21,7 @@ export default function Detail({ post, onBack }: { post: any, onBack: () => void
     useEffect(() => {
       async function fetchAuthor() {
         if (post?.author_id) {
-              const { data, error } = await supabase
+              const { data } = await supabase
               .from("profile")
               .select("full_name, avatar_url")
               .eq("user_id", post.author_id)

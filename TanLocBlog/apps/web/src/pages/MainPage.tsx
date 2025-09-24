@@ -5,7 +5,6 @@ import Header from "../components/Header/Header"
 import Footer from "../components/Footer/Footer"
 import SideBar from "../components/Sidebar/SideBar";
 import BlogList from "../components/Blog/BlogList";
-import Detail from "../components/Blog/Detail";
 import SearchBar from "../components/SearchBar/SearchBar";
 import { GiHamburgerMenu } from 'react-icons/gi';
 import { AiOutlineClose } from 'react-icons/ai';
