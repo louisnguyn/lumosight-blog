@@ -343,7 +343,7 @@ function MainPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 bg-blue-600 dark:bg-gray-800">
+      <section className="py-16 bg-gradient-to-tl from-blue-600 via-blue-700 to-purple-800 dark:from-gray-900 dark:via-gray-800 dark:to-blue-900 text-white">
         <div className="max-w-4xl mx-auto text-center px-6">
           <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6">
             Ready to Share Your Story?

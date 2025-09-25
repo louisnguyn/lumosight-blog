@@ -45,13 +45,13 @@ export default function Footer() {
                 Discover amazing stories, share your thoughts, and connect with a community of passionate writers.
               </p>
               <div className="flex space-x-4">
-                <Link 
+                {/* <Link 
                   to="/" 
                   className="p-2 bg-white/10 hover:bg-white/20 rounded-lg transition-all duration-300 hover:scale-110 group"
                   aria-label="Facebook"
                 >
                   <FaFacebook className="w-5 h-5 group-hover:text-yellow-400 transition-colors" />
-                </Link>
+                </Link> */}
                 {/* <Link 
                   to="/" 
                   className="p-2 bg-white/10 hover:bg-white/20 rounded-lg transition-all duration-300 hover:scale-110 group"
@@ -59,13 +59,13 @@ export default function Footer() {
                 >
                   <FaTwitter className="w-5 h-5 group-hover:text-yellow-400 transition-colors" />
                 </Link> */}
-                <Link 
+                {/* <Link 
                   to="/" 
                   className="p-2 bg-white/10 hover:bg-white/20 rounded-lg transition-all duration-300 hover:scale-110 group"
                   aria-label="Instagram"
                 >
                   <FaInstagram className="w-5 h-5 group-hover:text-yellow-400 transition-colors" />
-                </Link>
+                </Link> */}
                 {/* <Link 
                   to="/" 
                   className="p-2 bg-white/10 hover:bg-white/20 rounded-lg transition-all duration-300 hover:scale-110 group"

@@ -8,7 +8,7 @@ import PostForm from "../components/PostForm/PostForm";
 import "./PostManagement.css";
 export default function PostManagementPage() {
   const [posts, setPosts] = useState<any[]>([]);
-  const [,setUserId] = useState<string | null>(null);
+  const [userId,setUserId] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [formMode, setFormMode] = useState<"create" | "edit" | null>(null);
