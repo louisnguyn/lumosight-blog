@@ -5,7 +5,7 @@ import Footer from "../components/Footer/Footer";
 import { supabase } from "../db/supabaseClient";
 import { FaArrowRight, FaUser, FaCalendarAlt, FaEye, FaHeart } from "react-icons/fa";
 import "./MainPage.css";
-
+import { BsFilePost } from 'react-icons/bs';
 interface Post {
   id: string;
   title: string;
@@ -320,7 +320,7 @@ function MainPage() {
                 
                 <div className="space-y-2 mb-6">
                   <div className="flex items-center justify-center text-gray-600 dark:text-gray-300">
-                    <FaUser className="mr-2" />
+                    <BsFilePost className="mr-2" />
                     <span className="font-semibold">{author.posts_count} Posts</span>
                   </div>
                   <div className="flex items-center justify-center text-gray-600 dark:text-gray-300">
