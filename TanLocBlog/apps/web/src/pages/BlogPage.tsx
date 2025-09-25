@@ -21,8 +21,8 @@ function MainPage() {
 
   async function fetchPosts(filter?: { category?: string, tag?: string, search?: string }) {
     let query = supabase.from('posts').select('*').eq('active', true);
-    if (filter?.category) query = query.eq('categories', filter.category);
-    if (filter?.tag) query = query.ilike('tags', `%${filter.tag}%`);
+    if (filter?.category) query = query.ilike('categories', filter.category.toLowerCase());
+    if (filter?.tag) query = query.ilike('tags', `%${filter.tag.toLowerCase()}%`);
     if (filter?.search) query = query.or(`title.ilike.%${filter.search}%,content.ilike.%${filter.search}%`);
     const { data, error } = await query;
     setPosts(error ? [] : data ?? []);

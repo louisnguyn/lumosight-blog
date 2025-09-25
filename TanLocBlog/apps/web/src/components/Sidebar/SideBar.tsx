@@ -15,12 +15,12 @@ export default function SideBar({ onFilter, onItemClick }: { onFilter: (filter: 
         const { data } = await supabase.from('posts').select('categories, tags').eq('active', true);
         if (!data) return;
         
-        const uniqueCategories = Array.from(new Set(data.map((p: any) => p.categories).filter(Boolean)));
+        const uniqueCategories = Array.from(new Set(data.map((p: any) => p.categories?.toLowerCase().trim()).filter(Boolean)));
         setCategories(uniqueCategories);
         
         const allTags = data.flatMap((p: any) =>
           typeof p.tags === "string"
-            ? p.tags.split(",").map((t: string) => t.trim())
+            ? p.tags.split(",").map((t: string) => t.trim().toLowerCase())
             : []
         );
         setTags(Array.from(new Set(allTags.filter(Boolean))));

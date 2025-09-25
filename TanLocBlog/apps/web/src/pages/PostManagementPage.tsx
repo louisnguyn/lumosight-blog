@@ -33,7 +33,9 @@ export default function PostManagementPage() {
 
   const filteredPosts = posts.filter(post =>
     post.title?.toLowerCase().includes(search.toLowerCase()) ||
-    post.content?.toLowerCase().includes(search.toLowerCase())
+    post.content?.toLowerCase().includes(search.toLowerCase()) ||
+    post.categories?.toLowerCase().includes(search.toLowerCase()) ||
+    post.tags?.toLowerCase().includes(search.toLowerCase())
   );
   const handleCreateClick = () => {
     setFormMode("create");
