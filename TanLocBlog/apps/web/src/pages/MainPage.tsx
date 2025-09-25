@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Header from "../components/Header/Header";
 import Footer from "../components/Footer/Footer";
+import { supabase } from "../db/supabaseClient";
 import { FaArrowRight, FaUser, FaCalendarAlt, FaEye, FaHeart } from "react-icons/fa";
 import "./MainPage.css";
 
@@ -27,9 +28,116 @@ interface TopAuthor {
 }
 
 function MainPage() {
-  const [posts] = useState<Post[]>([]);
-  const [topAuthors] = useState<TopAuthor[]>([]);
-  const [loading] = useState(true);
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [topAuthors, setTopAuthors] = useState<TopAuthor[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchRecentPosts();
+    fetchTopAuthors();
+  }, []);
+
+  const fetchRecentPosts = async () => {
+    try {
+      // First, get the posts
+      const { data: postsData, error: postsError } = await supabase
+        .from('posts')
+        .select('*')
+        .eq('active', true)
+        .order('created_at', { ascending: false })
+        .limit(6);
+
+      if (postsError) throw postsError;
+
+      // Then, get the author profiles for these posts
+      const authorIds = [...new Set(postsData?.map(post => post.author_id) || [])];
+      
+      const { data: profilesData, error: profilesError } = await supabase
+        .from('profile')
+        .select('user_id, full_name, avatar_url')
+        .in('user_id', authorIds);
+
+      if (profilesError) throw profilesError;
+
+      // Create a map of author_id to profile data
+      const profilesMap = profilesData?.reduce((acc: any, profile: any) => {
+        acc[profile.user_id] = profile;
+        return acc;
+      }, {}) || {};
+
+      // Combine posts with author data
+      const postsWithAuthors = postsData?.map(post => ({
+        ...post,
+        author_name: profilesMap[post.author_id]?.full_name || 'Unknown Author',
+        author_avatar: profilesMap[post.author_id]?.avatar_url || '/profile.jpeg'
+      })) || [];
+
+      setPosts(postsWithAuthors);
+    } catch (error) {
+      console.error('Error fetching recent posts:', error);
+    }
+  };
+
+  const fetchTopAuthors = async () => {
+    try {
+      // First, get all posts with author info
+      const { data: postsData, error: postsError } = await supabase
+        .from('posts')
+        .select('author_id, views')
+        .eq('active', true);
+
+      if (postsError) throw postsError;
+
+      // Get unique author IDs
+      const authorIds = [...new Set(postsData?.map(post => post.author_id) || [])];
+      
+      // Get profiles for these authors
+      const { data: profilesData, error: profilesError } = await supabase
+        .from('profile')
+        .select('user_id, full_name, avatar_url')
+        .in('user_id', authorIds);
+
+      if (profilesError) throw profilesError;
+
+      // Create a map of author_id to profile data
+      const profilesMap = profilesData?.reduce((acc: any, profile: any) => {
+        acc[profile.user_id] = profile;
+        return acc;
+      }, {}) || {};
+
+      // Group by author and calculate stats
+      const authorStats = postsData?.reduce((acc: any, post: any) => {
+        const authorId = post.author_id;
+        const profile = profilesMap[authorId];
+        const authorName = profile?.full_name || 'Unknown Author';
+        const authorAvatar = profile?.avatar_url || '/profile.jpeg';
+
+        if (!acc[authorId]) {
+          acc[authorId] = {
+            author_id: authorId,
+            author_name: authorName,
+            author_avatar: authorAvatar,
+            posts_count: 0,
+            total_views: 0
+          };
+        }
+
+        acc[authorId].posts_count += 1;
+        acc[authorId].total_views += post.views || 0;
+        return acc;
+      }, {});
+
+      const topAuthors = Object.values(authorStats || {})
+        .sort((a: any, b: any) => b.posts_count - a.posts_count)
+        .slice(0, 3);
+
+      setTopAuthors(topAuthors as TopAuthor[]);
+    } catch (error) {
+      console.error('Error fetching top authors:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
 
 
@@ -39,6 +147,17 @@ function MainPage() {
       month: 'short',
       day: 'numeric'
     });
+  };
+
+  const stripHtmlTags = (html: string) => {
+    return html.replace(/<[^>]*>/g, '').trim();
+  };
+
+  const getContentPreview = (content: string, maxLength: number = 150) => {
+    const strippedContent = stripHtmlTags(content);
+    return strippedContent.length > maxLength 
+      ? strippedContent.substring(0, maxLength) + '...'
+      : strippedContent;
   };
 
   return (
@@ -126,7 +245,7 @@ function MainPage() {
                     </h3>
                     
                     <p className="text-gray-600 dark:text-gray-300 mb-4 line-clamp-3">
-                      {post.content.substring(0, 150)}...
+                      {getContentPreview(post.content)}
                     </p>
                     
                     <div className="flex items-center justify-between">
@@ -141,7 +260,7 @@ function MainPage() {
                         </span>
                       </div>
                       <Link 
-                        to={`/blog/${post.id}`}
+                        to={`/post/${post.id}`}
                         className="text-blue-600 dark:text-blue-400 font-semibold hover:text-blue-800 dark:hover:text-blue-300 transition-colors"
                       >
                         Read More →
@@ -210,13 +329,13 @@ function MainPage() {
                   </div>
                 </div>
                 
-                <Link 
+                {/* <Link 
                   to={`/blog?author=${author.author_id}`}
                   className="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 hover:scale-105 active:scale-95 transition-all duration-300"
                 >
                   View Posts
                   <FaArrowRight className="ml-2" />
-                </Link>
+                </Link> */}
               </div>
             ))}
           </div>
