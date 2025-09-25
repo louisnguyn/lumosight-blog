@@ -70,14 +70,14 @@ const CommentItem = React.memo(({
 
   return (
     <div style={containerStyle} className="relative">
-      <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-3 sm:p-4">
-        <div className="flex items-start gap-3">
+      <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-3 sm:p-4 overflow-hidden">
+        <div className="flex items-start gap-2 sm:gap-3">
           <img
             src={comment.author_avatar}
             alt={comment.author_name}
-            className="w-8 h-8 rounded-full object-cover flex-shrink-0"
+            className="w-7 h-7 sm:w-8 sm:h-8 rounded-full object-cover flex-shrink-0"
           />
-            <div className="flex-1 min-w-0">
+            <div className="flex-1 min-w-0 overflow-hidden">
               <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-2">
                 <span className="font-semibold text-gray-900 dark:text-white">
                   {comment.author_name}
@@ -95,7 +95,7 @@ const CommentItem = React.memo(({
                 onCancel={onCancelEdit}
               />
             ) : (
-              <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap break-words overflow-wrap-anywhere">
+              <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap break-words overflow-wrap-anywhere text-sm sm:text-base leading-relaxed max-w-full">
                 {comment.content}
               </p>
             )}

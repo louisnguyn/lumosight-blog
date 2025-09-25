@@ -32,20 +32,20 @@ const CommentForm: React.FC<CommentFormProps> = ({
   }
 
   return (
-    <form onSubmit={onSubmit} className="mb-8">
-      <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6">
-        <div className="flex items-start gap-3">
+    <form onSubmit={onSubmit} className="mb-6 sm:mb-8">
+      <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 sm:p-6">
+        <div className="flex items-start gap-2 sm:gap-3">
           <img
             src={userProfile?.avatar_url || '/profile.jpeg'}
             alt="Your avatar"
-            className="w-8 h-8 rounded-full object-cover"
+            className="w-7 h-7 sm:w-8 sm:h-8 rounded-full object-cover flex-shrink-0"
           />
-          <div className="flex-1">
+          <div className="flex-1 min-w-0">
             <textarea
               value={newComment}
               onChange={(e) => onCommentChange(e.target.value)}
-              className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white break-words overflow-wrap-anywhere"
-              rows={4}
+              className="w-full p-2 sm:p-3 border border-gray-300 dark:border-gray-600 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white break-words overflow-wrap-anywhere text-sm sm:text-base"
+              rows={3}
               placeholder="Write a comment..."
               required
             />
