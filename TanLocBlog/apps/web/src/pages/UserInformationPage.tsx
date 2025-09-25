@@ -5,7 +5,7 @@ import { supabase } from '../db/supabaseClient';
 import { CgSpinner } from 'react-icons/cg';
 import { RiImageCircleAiLine } from 'react-icons/ri';
 export default function UserInformationPage() {
-  const [profile, setProfile] = useState<any>(null);
+  const [setProfile] = useState<any>(null);
   const [fullName, setFullName] = useState("");
   const [bio, setBio] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");

@@ -6,6 +6,8 @@ import { FaHeart } from 'react-icons/fa';
 import { FaRegHeart } from 'react-icons/fa';
 import { FaShareSquare } from 'react-icons/fa';
 import Comments from "../Comments/Comments";
+import { FaCalendarAlt } from 'react-icons/fa';
+import { FaEye } from 'react-icons/fa';
 export default function Detail({ post, onBack }: { post: any, onBack: () => void }) {
     const [authorName, setAuthorName] = useState<string>("");
     const [authorAvatar, setAuthorAvatar] = useState<string>("");
@@ -98,80 +100,145 @@ export default function Detail({ post, onBack }: { post: any, onBack: () => void
     setTimeout(() => setCopied(false), 3000);
   };
   return (
-    <div className="mx-auto mt-5 mb-5 p-4 sm:p-8 md:p-12 lg:p-16 bg-white dark:bg-gray-900 rounded-xl shadow-lg max-w-full lg:max-w-6xl md:max-w-5x1">
-      <button onClick={onBack} className="mb-6 text-blue-600 text-lg font-medium">
-        <BiArrowBack className="inline-block mr-2" /> Back to list
-      </button>
-      <div className="flex flex-col gap-8">
-        {/* Blog Image */}
-        <div className="flex justify-center">
-          <img
-            src={post.image || "/default-blog.jpg"}
-            alt={post.title}
-            className="rounded-xl object-cover w-full max-w-2xl bg-gray-200"
-          />
-        </div>
-        {/* Meta Info */}
-        <div className="flex items-center gap-4 text-gray-500 text-base justify-between">
-          <span>{formattedDate}</span>
-          {post.categories && (
-            <span className="bg-blue-300 text-gray-700 px-3 py-1 rounded-lg text-sm font-medium">
-              {post.categories}
-            </span>
-          )}
-        </div>
-        {/* Title */}
-        <h2 className="text-4xl lg:text-5xl font-bold text-blue-600 mb-2">{post.title}</h2>
-        <div className="flex mb-2 text-base text-gray-500 font-medium items-center">
-          <img
-            src={authorAvatar || "/profile.jpeg"}
-            alt={authorName}
-            className="w-10 h-10 rounded-full object-cover mr-2 bg-gray-200"
-          />
-          {authorName}
-        </div>
-        {/* Content */}
-        <div className="post-content text-lg lg:text-xl text-gray-700 dark:text-gray-300 mb-4" dangerouslySetInnerHTML={{ __html: post.content }}></div>
-        {/* Tags */}
-        <div className="flex gap-2 mb-2 flex-wrap justify-end">
-          {post.tags &&
-            post.tags.split(",").map((tag: string) => (
-              <span
-                key={tag}
-                className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm font-medium"
-              >
-                #{tag.trim()}
-              </span>
-            ))}
-        </div>
-        {/* Views and Likes */}
-        <div className="flex items-center gap-6 mt-2 text-gray-500 text-base justify-between">
-          <span>{post.views || 0} views</span>
-          <div className="flex flex-row">
-          {userId ? (
-            <button
-              className="flex items-center gap-2 px-3 py-1 rounded font-semibold"
-              onClick={handleLike}
-            >
-              {liked ? <FaHeart className="text-red-500" /> : <FaRegHeart />}
-              {likes} likes
-            </button>
-            ) : (
-              <span className="flex items-center gap-2 px-3 py-1 rounded font-semibold">
-                {likes} likes
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      {/* Hero Section */}
+      <section className="relative bg-gradient-to-br from-blue-600 via-blue-700 to-purple-800 dark:from-gray-900 dark:via-gray-800 dark:to-blue-900 text-white py-16">
+        <div className="absolute inset-0 bg-black/10"></div>
+        <div className="relative max-w-7xl mx-auto px-6">
+          <button 
+            onClick={onBack} 
+            className="mb-8 inline-flex items-center px-6 py-3 bg-white/30 backdrop-blur-md text-white font-semibold rounded-xl hover:bg-white/50 hover:scale-105 active:scale-95 transition-all duration-300 border border-white/20 hover:border-white/40 shadow-lg hover:shadow-xl"
+          >
+            <BiArrowBack className="mr-2 w-5 h-5" />
+            Back to Blog
+          </button>
+          
+          <div className="text-center mb-8">
+            {post.categories && (
+              <span className="inline-block bg-yellow-400 text-blue-900 px-4 py-2 rounded-full text-sm font-semibold mb-4">
+                {post.categories}
               </span>
             )}
-            <button
-              className="flex items-center gap-2 px-3 py-1 rounded font-semibold bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700"
-              onClick={handleShare}
-            >
-              <FaShareSquare />
-              {copied ? "Copied!" : "Share"}
-            </button>
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 animate-fade-in-up">
+              {post.title}
+            </h1>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 text-blue-100 animate-fade-in-up animation-delay-200">
+              <div className="flex items-center gap-2">
+                <img
+                  src={authorAvatar || "/profile.jpeg"}
+                  alt={authorName}
+                  className="w-12 h-12 rounded-full object-cover border-2 border-white/30"
+                />
+                <span className="font-semibold text-center">{authorName}</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <FaCalendarAlt className="w-4 h-4"/>
+                <span className="text-sm sm:text-base">{formattedDate}</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <FaEye className="w-4 h-4"/>
+                <span className="text-sm sm:text-base">{post.views || 0} views</span>
+              </div>
+            </div>
           </div>
         </div>
+        
+        {/* Floating Elements */}
+        <div className="absolute top-10 left-10 w-20 h-20 bg-yellow-400/20 rounded-full animate-float"></div>
+        <div className="absolute top-32 right-20 w-16 h-16 bg-white/20 rounded-full animate-float animation-delay-1000"></div>
+        <div className="absolute bottom-10 left-1/4 w-12 h-12 bg-yellow-400/30 rounded-full animate-float animation-delay-2000"></div>
+      </section>
+
+      {/* Main Content */}
+      <div className="max-w-4xl mx-auto px-6 py-12">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden border border-gray-200 dark:border-gray-700">
+          {/* Featured Image */}
+          <div className="relative overflow-hidden">
+            <img
+              src={post.image || "/default-blog.jpg"}
+              alt={post.title}
+              className="w-full"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+          </div>
+
+          {/* Article Content */}
+          <div className="p-8 lg:p-12">
+            {/* Tags */}
+            {post.tags && (
+              <div className="flex gap-2 mb-8 flex-wrap">
+                {post.tags.split(",").map((tag: string) => (
+                  <span
+                    key={tag}
+                    className="bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 px-3 py-1 rounded-full text-sm font-medium hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors duration-300"
+                  >
+                    #{tag.trim()}
+                  </span>
+                ))}
+              </div>
+            )}
+
+            {/* Article Content */}
+            <div 
+              className="post-content prose prose-lg lg:prose-xl max-w-none text-gray-700 dark:text-gray-300 leading-relaxed"
+              dangerouslySetInnerHTML={{ __html: post.content }}
+            ></div>
+
+            {/* Action Buttons */}
+            <div className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
+              <div className="flex flex-row items-center justify-between gap-4">
+                <div className="flex items-center gap-6 text-gray-500 dark:text-gray-400">
+                  <div className="flex items-center gap-2">
+                    <FaEye className="w-4 h-4"/>
+                    <span className="text-sm sm:text-base">{post.views || 0} views</span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3 sm:gap-4">
+                  {userId ? (
+                    <button
+                      className={`flex items-center gap-2 px-4 py-2 sm:px-6 sm:py-3 rounded-xl font-semibold transition-all duration-300 hover:scale-105 active:scale-95 text-sm sm:text-base ${
+                        liked 
+                          ? "bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-900 dark:text-red-300 dark:hover:bg-red-800" 
+                          : "bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+                      }`}
+                      onClick={handleLike}
+                    >
+                      {liked ? <FaHeart className="text-red-500 w-4 h-4" /> : <FaRegHeart className="w-4 h-4" />}
+                      <span className="hidden sm:inline">{likes} {likes === 1 ? 'Like' : 'Likes'}</span>
+                      <span className="sm:hidden">{likes}</span>
+                    </button>
+                  ) : (
+                    <div className="flex items-center gap-2 px-4 py-2 sm:px-6 sm:py-3 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm sm:text-base">
+                      <FaRegHeart className="w-4 h-4" />
+                      <span className="hidden sm:inline">{likes} {likes === 1 ? 'Like' : 'Likes'}</span>
+                      <span className="sm:hidden">{likes}</span>
+                    </div>
+                  )}
+                  
+                  <button
+                    className={`flex items-center gap-2 px-4 py-2 sm:px-6 sm:py-3 rounded-xl font-semibold transition-all duration-300 hover:scale-105 active:scale-95 text-sm sm:text-base ${
+                      copied 
+                        ? "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300" 
+                        : "bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+                    }`}
+                    onClick={handleShare}
+                  >
+                    <FaShareSquare className="w-4 h-4" />
+                    <span className="hidden sm:inline">{copied ? "Copied!" : "Share"}</span>
+                    <span className="sm:hidden">{copied ? "✓" : "Share"}</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Comments Section */}
+        <div className="mt-12">
+          <Comments postId={post.id} />
+        </div>
       </div>
-      <Comments postId={post.id} />
     </div>
   );
 }

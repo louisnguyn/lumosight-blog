@@ -9,6 +9,8 @@ import ChangePasswordPage from "./pages/ChangePasswordPage"
 import PrivacyPage from "./pages/PrivacyPage"
 import { Analytics } from "@vercel/analytics/react"
 import PostDetailPage from "./pages/DetailPage"
+import BlogPage from "./pages/BlogPage";
+import OurStoryPage from "./pages/OurStoryPage";
 function App() {
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950 transition-colors flex flex-col">
@@ -16,6 +18,8 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<MainPage />} />
+          <Route path="/blog" element={<BlogPage />} />
+          <Route path="/our-story" element={<OurStoryPage />} />
           <Route path="/post/:id" element={<PostDetailPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />

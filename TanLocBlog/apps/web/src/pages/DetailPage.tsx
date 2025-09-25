@@ -37,7 +37,7 @@ export default function PostDetailPage() {
     <div className="min-h-screen flex flex-col bg-white dark:bg-gray-950">
       <Header/>
       <div className="flex-1 flex flex-col items-center justify-center">
-        <Detail post={post} onBack={() => navigate("/")} />
+        <Detail post={post} onBack={() => navigate("/blog")} />
       </div>
       <Footer />
     </div>
