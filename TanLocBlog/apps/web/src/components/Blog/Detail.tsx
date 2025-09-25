@@ -108,7 +108,7 @@ export default function Detail({ post, onBack }: { post: any, onBack: () => void
           <img
             src={post.image || "/default-blog.jpg"}
             alt={post.title}
-            className="rounded-xl object-cover w-full max-w-2xl h-[320px] md:h-[420px] lg:h-[520px] bg-gray-200"
+            className="rounded-xl object-cover w-full max-w-2xl bg-gray-200"
           />
         </div>
         {/* Meta Info */}

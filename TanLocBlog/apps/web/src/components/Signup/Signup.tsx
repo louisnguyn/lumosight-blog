@@ -45,12 +45,12 @@ export default function Signup() {
         onSubmit={handleSignup}
         className="w-full max-w-sm mx-auto p-8 bg-white dark:bg-gray-900 rounded-2xl shadow-xl flex flex-col gap-6"
       >
-        <div className="flex flex-col items-center gap-2 mb-2">
+        <div className="flex flex-col items-center">
           <Link to="/">
-            {theme === "dark" ? (
-              <img src="/logo.png" className="h-24 mb-2" alt="Logo" />
+          {theme === "dark" ? (
+              <img src="/Lumosight_logo.png" className="h-50" alt="Logo" />
             ) : (
-              <img src="/logo_transparent.png" className="h-24 mb-2" alt="Logo" />
+              <img src="/Lumosight_logo.png" className="h-50" alt="Logo" />
             )}
           </Link>
           <h2 className="text-3xl font-bold text-blue-600 dark:text-white mb-2">Sign Up</h2>

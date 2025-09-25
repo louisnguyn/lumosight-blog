@@ -47,9 +47,9 @@ export default function Header({ onSearch }: { onSearch?: (search?: string) => v
             <div>
                 <NavLink to="/">
                     { theme === "light" ? (
-                        <img src="/Lumosight_logo_black.png" className="h-25" />
+                        <img src="/Lumosight_logo_black_transparent.png" className="h-25" />
                     ) : (
-                        <img src="/Lumosight_logo.png" className="h-25" />
+                        <img src="/Lumosight_logo_word.png" className="h-25" />
                     )}
                 </NavLink>
             </div>
