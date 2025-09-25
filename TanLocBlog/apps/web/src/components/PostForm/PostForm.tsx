@@ -118,7 +118,7 @@ export default function PostForm({ mode, post, onSuccess, onCancel }: {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-xl mx-auto p-6 bg-white dark:bg-gray-900 rounded-xl shadow-lg">
+    <form onSubmit={handleSubmit} className="max-w-xl mx-auto">
       <h2 className="text-2xl font-bold mb-4 text-center dark:text-white">{mode === "create" ? "Create Post" : "Edit Post"}</h2>
       <label className="block mb-1 font-semibold dark:text-white" htmlFor="title">Title</label>
       <input
@@ -168,7 +168,7 @@ export default function PostForm({ mode, post, onSuccess, onCancel }: {
         className="w-full mb-3 px-3 py-2 rounded border bg-white dark:bg-gray-800 dark:text-white"
       />
       {/* <label className="block mb-1 font-semibold dark:text-white" htmlFor="image">Upload Image</label> */}
-      <div className="mb-4 flex justify-center">
+      <div className="mb-4 flex sm:flex-row flex-col justify-center">
       <input
         id="image"
         type="file"

@@ -96,7 +96,7 @@ export default function PostManagementPage() {
         <div className="absolute bottom-10 left-1/4 w-12 h-12 bg-yellow-400/30 rounded-full animate-float animation-delay-2000"></div>
       </section>
 
-      <div className="flex-1 max-w-7xl mx-auto py-8 w-full px-6">
+      <div className="flex-1 max-w-7xl mx-auto py-8 px-6">
         {formMode ? (
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 border border-gray-200 dark:border-gray-700">
             <PostForm
