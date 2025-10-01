@@ -21,7 +21,6 @@ function MainPage() {
 
   async function fetchPosts(filter?: { category?: string, tag?: string, search?: string }) {
     try {
-      // First, get the posts
       let query = supabase.from('posts').select('*').eq('active', true);
       if (filter?.category) query = query.ilike('categories', filter.category.toLowerCase());
       if (filter?.tag) query = query.ilike('tags', `%${filter.tag.toLowerCase()}%`);

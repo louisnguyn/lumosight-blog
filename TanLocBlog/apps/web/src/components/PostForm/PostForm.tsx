@@ -36,7 +36,7 @@ export default function PostForm({ mode, post, onSuccess, onCancel }: {
         setImageFile(file);
         setImagePreviewLoading(true);
         setTimeout(() => {
-          setImage(URL.createObjectURL(file)); // Preview after 2s
+          setImage(URL.createObjectURL(file));
           setImagePreviewLoading(false);
         }, 2000);
       }
@@ -54,7 +54,6 @@ export default function PostForm({ mode, post, onSuccess, onCancel }: {
         setError(uploadError.message);
         return null;
       }
-      // Get public URL
       const { data } = supabase.storage
         .from("image_upload")
         .getPublicUrl(filePath);

@@ -103,7 +103,6 @@ export default function Detail({ post, onBack }: { post: any, onBack: () => void
   };
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-blue-600 via-blue-700 to-purple-800 dark:from-gray-900 dark:via-gray-800 dark:to-blue-900 text-white py-16">
         <div className="absolute inset-0 bg-black/10"></div>
         <div className="relative max-w-7xl mx-auto px-6">
@@ -150,16 +149,13 @@ export default function Detail({ post, onBack }: { post: any, onBack: () => void
           </div>
         </div>
         
-        {/* Floating Elements */}
         <div className="absolute top-10 left-10 w-20 h-20 bg-yellow-400/20 rounded-full animate-float"></div>
         <div className="absolute top-32 right-20 w-16 h-16 bg-white/20 rounded-full animate-float animation-delay-1000"></div>
         <div className="absolute bottom-10 left-1/4 w-12 h-12 bg-yellow-400/30 rounded-full animate-float animation-delay-2000"></div>
       </section>
 
-      {/* Main Content */}
       <div className="max-w-4xl mx-auto px-4 py-12">
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden border border-gray-200 dark:border-gray-700">
-          {/* Featured Image */}
           <div className="relative overflow-hidden">
             <img
               src={post.image || "/default-blog.jpg"}
@@ -169,9 +165,7 @@ export default function Detail({ post, onBack }: { post: any, onBack: () => void
             <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
           </div>
 
-          {/* Article Content */}
           <div className="p-6 lg:p-8">
-            {/* Tags */}
             {post.tags && (
               <div className="flex gap-2 mb-8 flex-wrap">
                 {post.tags.split(",").map((tag: string) => (
@@ -185,13 +179,11 @@ export default function Detail({ post, onBack }: { post: any, onBack: () => void
               </div>
             )}
 
-            {/* Article Content */}
             <div 
               className="post-content prose prose-lg lg:prose-xl max-w-none text-gray-700 dark:text-gray-300 leading-relaxed"
               dangerouslySetInnerHTML={{ __html: post.content }}
             ></div>
 
-            {/* Action Buttons */}
             <div className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
               <div className="flex flex-row items-center justify-between gap-4">
                 <div className="flex items-center gap-6 text-gray-500 dark:text-gray-400">
@@ -241,7 +233,6 @@ export default function Detail({ post, onBack }: { post: any, onBack: () => void
           </div>
         </div>
 
-        {/* Comments Section */}
         <div className="mt-12">
           <Comments postId={post.id} />
         </div>

@@ -27,8 +27,6 @@ export default function UserPostsPage() {
 
       try {
         setLoading(true);
-        
-        // Fetch user profile
         const { data: profileData, error: profileError } = await supabase
           .from("profile")
           .select("user_id, full_name, email, avatar_url, bio, phone, created_at")
@@ -42,8 +40,6 @@ export default function UserPostsPage() {
         }
 
         setUserProfile(profileData);
-
-        // Fetch user posts
         const { data: postsData, error: postsError } = await supabase
           .from("posts")
           .select("*")
@@ -111,8 +107,7 @@ export default function UserPostsPage() {
   return (
     <div className="min-h-screen flex flex-col bg-white dark:bg-gray-950">
       <Header />
-      
-      {/* Hero Section */}
+    
       <section className="relative bg-gradient-to-br from-blue-600 via-blue-700 to-purple-800 dark:from-gray-900 dark:via-gray-800 dark:to-blue-900 text-white py-16">
         <div className="absolute inset-0 bg-black/10"></div>
         <div className="relative max-w-7xl mx-auto px-4">
@@ -125,7 +120,6 @@ export default function UserPostsPage() {
           </button>
           
           <div className="text-center">
-            {/* User Avatar */}
             <div className="mb-6">
               <img
                 src={userProfile.avatar_url || "/profile.jpeg"}
@@ -134,7 +128,6 @@ export default function UserPostsPage() {
               />
             </div>
             
-            {/* User Info */}
             <h1 className="text-4xl sm:text-5xl font-bold mb-4 animate-fade-in-up">
               {userProfile.full_name}
             </h1>
@@ -163,8 +156,6 @@ export default function UserPostsPage() {
                 </div>
               )}
             </div>
-            
-            {/* Stats */}
             <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-8 text-blue-100 animate-fade-in-up animation-delay-400">
               <div className="flex items-center gap-2">
                 <BsFilePost className="w-5 h-5" />
@@ -179,8 +170,6 @@ export default function UserPostsPage() {
                 <span className="text-lg font-semibold">{totalLikes.toLocaleString()} Likes</span>
               </div>
             </div>
-            
-            {/* Bio Section */}
             {userProfile.bio && (
               <div className="mt-8 max-w-3xl mx-auto animate-fade-in-up animation-delay-600">
                 <div className="bio-section rounded-2xl p-6">
@@ -194,13 +183,11 @@ export default function UserPostsPage() {
           </div>
         </div>
         
-        {/* Floating Elements */}
         <div className="absolute top-10 left-10 w-20 h-20 bg-yellow-400/20 rounded-full animate-float"></div>
         <div className="absolute top-32 right-20 w-16 h-16 bg-white/20 rounded-full animate-float animation-delay-1000"></div>
         <div className="absolute bottom-10 left-1/4 w-12 h-12 bg-yellow-400/30 rounded-full animate-float animation-delay-2000"></div>
       </section>
 
-      {/* Posts Section */}
       <div className="max-w-7xl mx-auto w-full px-4 py-6">
         <div className="mb-8">
           <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">

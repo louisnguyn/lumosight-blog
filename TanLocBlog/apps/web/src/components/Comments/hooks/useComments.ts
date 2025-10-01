@@ -20,7 +20,6 @@ export const useComments = (postId: string) => {
 
   const fetchComments = useCallback(async () => {
     try {
-      // First, fetch all comments for this post
       const { data: allComments, error: commentsError } = await supabase
         .from('comments')
         .select('*')
@@ -29,10 +28,8 @@ export const useComments = (postId: string) => {
 
       if (commentsError) throw commentsError;
 
-      // Get unique author IDs
       const authorIds = [...new Set(allComments?.map(comment => comment.author_id) || [])];
       
-      // Fetch author profiles
       const { data: profiles, error: profilesError } = await supabase
         .from('profile')
         .select('user_id, full_name, avatar_url')
@@ -40,7 +37,6 @@ export const useComments = (postId: string) => {
 
       if (profilesError) throw profilesError;
 
-      // Create a map of author_id to profile data
       const profileMap = new Map();
       profiles?.forEach(profile => {
         profileMap.set(profile.user_id, {
@@ -49,7 +45,6 @@ export const useComments = (postId: string) => {
         });
       });
 
-      // Build a map of all comments with author info
       const commentsWithAuthors = allComments?.map(comment => {
         const authorInfo = profileMap.get(comment.author_id) || {
           full_name: 'Unknown User',
@@ -63,21 +58,17 @@ export const useComments = (postId: string) => {
         };
       }) || [];
 
-      // Create a map for quick lookup
       const commentMap = new Map();
       commentsWithAuthors.forEach(comment => {
         commentMap.set(comment.id, comment);
       });
 
-      // Build nested structure
       const rootComments: Comment[] = [];
       
       commentsWithAuthors.forEach(comment => {
         if (comment.parent_id === null) {
-          // This is a root comment
           rootComments.push(comment);
         } else {
-          // This is a reply, find its parent
           const parent = commentMap.get(comment.parent_id);
           if (parent) {
             parent.replies.push(comment);
@@ -85,7 +76,6 @@ export const useComments = (postId: string) => {
         }
       });
 
-      // Sort replies within each comment
       const sortReplies = (comment: Comment) => {
         if (comment.replies && comment.replies.length > 0) {
           comment.replies.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());

@@ -40,7 +40,6 @@ function MainPage() {
 
   const fetchRecentPosts = async () => {
     try {
-      // First, get the posts
       const { data: postsData, error: postsError } = await supabase
         .from('posts')
         .select('*')
@@ -50,7 +49,6 @@ function MainPage() {
 
       if (postsError) throw postsError;
 
-      // Then, get the author profiles for these posts
       const authorIds = [...new Set(postsData?.map(post => post.author_id) || [])];
       
       const { data: profilesData, error: profilesError } = await supabase
@@ -60,13 +58,11 @@ function MainPage() {
 
       if (profilesError) throw profilesError;
 
-      // Create a map of author_id to profile data
       const profilesMap = profilesData?.reduce((acc: any, profile: any) => {
         acc[profile.user_id] = profile;
         return acc;
       }, {}) || {};
 
-      // Combine posts with author data
       const postsWithAuthors = postsData?.map(post => ({
         ...post,
         author_name: profilesMap[post.author_id]?.full_name || 'Unknown Author',
@@ -81,7 +77,6 @@ function MainPage() {
 
   const fetchTopAuthors = async () => {
     try {
-      // First, get all posts with author info
       const { data: postsData, error: postsError } = await supabase
         .from('posts')
         .select('author_id, views')
@@ -89,10 +84,8 @@ function MainPage() {
 
       if (postsError) throw postsError;
 
-      // Get unique author IDs
       const authorIds = [...new Set(postsData?.map(post => post.author_id) || [])];
       
-      // Get profiles for these authors
       const { data: profilesData, error: profilesError } = await supabase
         .from('profile')
         .select('user_id, full_name, avatar_url')
@@ -100,13 +93,11 @@ function MainPage() {
 
       if (profilesError) throw profilesError;
 
-      // Create a map of author_id to profile data
       const profilesMap = profilesData?.reduce((acc: any, profile: any) => {
         acc[profile.user_id] = profile;
         return acc;
       }, {}) || {};
 
-      // Group by author and calculate stats
       const authorStats = postsData?.reduce((acc: any, post: any) => {
         const authorId = post.author_id;
         const profile = profilesMap[authorId];
@@ -130,11 +121,9 @@ function MainPage() {
 
       const topAuthors = Object.values(authorStats || {})
         .sort((a: any, b: any) => {
-          // First by post count (descending)
           if (b.posts_count !== a.posts_count) {
             return b.posts_count - a.posts_count;
           }
-          // If post count is equal, then by total views (descending)
           return b.total_views - a.total_views;
         })
         .slice(0, 3);
