@@ -75,24 +75,6 @@
     color: #e11d48;
 }
 
-.post-content pre {
-    background: #1e293b;
-    color: #e2e8f0;
-    padding: 1.5rem;
-    border-radius: 0.5rem;
-    overflow-x: auto;
-    margin: 1.5rem 0;
-    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-    font-size: 0.875rem;
-    line-height: 1.6;
-}
-
-.post-content pre code {
-    background: transparent;
-    padding: 0;
-    color: inherit;
-    font-size: inherit;
-}
 
 .post-content a {
     color: #3b82f6;
@@ -165,10 +147,6 @@
     color: #fbbf24;
 }
 
-.dark .post-content pre {
-    background: #111827;
-    color: #e5e7eb;
-}
 
 .dark .post-content a {
     color: #60a5fa;

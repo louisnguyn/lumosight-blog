@@ -15,6 +15,13 @@ import Highlight from '@tiptap/extension-highlight'
 import { BulletList, ListItem, OrderedList } from '@tiptap/extension-list'
 import Blockquote from '@tiptap/extension-blockquote'
 import TextAlign from '@tiptap/extension-text-align'
+import Color from '@tiptap/extension-color'
+import { TextStyle } from '@tiptap/extension-text-style'
+import { Table } from '@tiptap/extension-table'
+import { TableRow } from '@tiptap/extension-table-row'
+import { TableCell } from '@tiptap/extension-table-cell'
+import { TableHeader } from '@tiptap/extension-table-header'
+import Link from '@tiptap/extension-link'
 import { BsTypeH1 } from 'react-icons/bs';
 import { FaBold } from 'react-icons/fa';
 import { FaItalic } from 'react-icons/fa';
@@ -34,10 +41,32 @@ import Placeholder from '@tiptap/extension-placeholder'
 import Image from '@tiptap/extension-image'
 import { BiImageAdd } from 'react-icons/bi';
 import { CgSpinner } from 'react-icons/cg';
+import { MdFormatColorText } from 'react-icons/md';
+import { 
+  MdTableChart, 
+  MdDeleteOutline,
+  MdAdd,
+  MdRemove,
+  MdLink
+} from 'react-icons/md';
 import "./TipTap.css"
 export default function TipTap({ value, onChange , placeholder = "" }: { value: string; onChange: (content: string) => void;placeholder?: string }) {
       // const [wordCount, setWordCount] = useState(0);
   const [imageUploadLoading, setImageUploadLoading] = useState(false);
+  const [showColorPicker, setShowColorPicker] = useState(false);
+  const [showTableControls, setShowTableControls] = useState(false);
+  const [showLinkModal, setShowLinkModal] = useState(false);
+  const [linkUrl, setLinkUrl] = useState('');
+  const [linkText, setLinkText] = useState('');
+  
+  const colors = [
+    '#000000', '#374151', '#6B7280', '#9CA3AF', '#D1D5DB', '#F3F4F6', '#FFFFFF',
+    '#EF4444', '#F97316', '#F59E0B', '#EAB308', '#84CC16', '#22C55E', '#10B981',
+    '#14B8A6', '#06B6D4', '#0EA5E9', '#3B82F6', '#6366F1', '#8B5CF6', '#A855F7',
+    '#D946EF', '#EC4899', '#F43F5E'
+  ];
+
+
   const editor = useEditor({
     extensions: [
         Document,
@@ -58,9 +87,23 @@ export default function TipTap({ value, onChange , placeholder = "" }: { value: 
         TextAlign.configure({
             types: ['heading', 'paragraph'],
         }),
+        TextStyle,
+        Color.configure({ types: [TextStyle.name] }),
         CharacterCount,
         Placeholder.configure({ placeholder }),
         Image,
+        Table.configure({
+          resizable: true,
+        }),
+        TableRow,
+        TableCell,
+        TableHeader,
+        Link.configure({
+          openOnClick: false,
+          HTMLAttributes: {
+            class: 'text-blue-600 underline hover:text-blue-800',
+          },
+        }),
     ],
     content: value,
     onUpdate: ({ editor }) => {
@@ -73,6 +116,96 @@ export default function TipTap({ value, onChange , placeholder = "" }: { value: 
       editor.commands.setContent(value);
     }
   }, [value]);
+
+  // Close color picker and table controls when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (showColorPicker && !(event.target as Element).closest('.color-picker-container')) {
+        setShowColorPicker(false);
+      }
+      if (showTableControls && !(event.target as Element).closest('.table-controls-container')) {
+        setShowTableControls(false);
+      }
+      if (showLinkModal && !(event.target as Element).closest('.link-modal-container')) {
+        setShowLinkModal(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showColorPicker, showTableControls, showLinkModal]);
+
+  // Handle link modal opening
+  const handleOpenLinkModal = () => {
+    if (!editor) return;
+    
+    const { from, to } = editor.state.selection;
+    const selectedText = editor.state.doc.textBetween(from, to, ' ');
+    
+    if (editor.isActive('link')) {
+      // Editing existing link
+      const linkAttributes = editor.getAttributes('link');
+      setLinkUrl(linkAttributes.href || '');
+      setLinkText(selectedText);
+    } else {
+      // Creating new link
+      setLinkUrl('');
+      setLinkText(selectedText); // Pre-fill with selected text if any
+    }
+    
+    setShowLinkModal(true);
+  };
+
+  // Handle link creation/update
+  const handleLinkSubmit = () => {
+    if (!editor) return;
+    
+    if (linkUrl.trim()) {
+      if (editor.isActive('link')) {
+        // Update existing link - both URL and text
+        const { from, to } = editor.state.selection;
+        
+        if (linkText.trim()) {
+          // Replace the entire link with new text and URL
+          editor.chain().focus().deleteRange({ from, to }).insertContent(`<a href="${linkUrl}">${linkText}</a>`).run();
+        } else {
+          // Just update the URL, keep existing text
+          editor.chain().focus().updateAttributes('link', { href: linkUrl }).run();
+        }
+      } else {
+        // Create new link with custom text
+        if (linkText.trim()) {
+          // Insert new text with link
+          editor.chain().focus().insertContent(`<a href="${linkUrl}">${linkText}</a>`).run();
+        } else {
+          // Use selected text or create link with URL as text
+          const { from, to } = editor.state.selection;
+          const selectedText = editor.state.doc.textBetween(from, to, ' ');
+          if (selectedText.trim()) {
+            editor.chain().focus().setLink({ href: linkUrl }).run();
+          } else {
+            // Insert URL as both text and link
+            editor.chain().focus().insertContent(`<a href="${linkUrl}">${linkUrl}</a>`).run();
+          }
+        }
+      }
+    }
+    setShowLinkModal(false);
+    setLinkUrl('');
+    setLinkText('');
+  };
+
+  // Handle link removal
+  const handleLinkRemove = () => {
+    if (!editor) return;
+    
+    editor.chain().focus().unsetLink().run();
+    setShowLinkModal(false);
+    setLinkUrl('');
+    setLinkText('');
+  };
     if (!editor) return null;
     const isAlignActive = (align: string) =>
     editor.isActive('paragraph', { textAlign: align }) ||
@@ -104,7 +237,7 @@ export default function TipTap({ value, onChange , placeholder = "" }: { value: 
   };
   return (
     <div className="border rounded bg-white mb-5 dark:bg-gray-800 dark:text-white">
-        <div className="post-tool flex flex-wrap border-b bg-white-50 dark:bg-gray-700">
+        <div className="post-tool flex flex-wrap border-b bg-white-50 dark:bg-gray-700 p-2">
             <button
             type="button"
             onClick={() => editor.chain().focus().toggleBold().run()}
@@ -203,6 +336,199 @@ export default function TipTap({ value, onChange , placeholder = "" }: { value: 
             >
             <FaAlignJustify/>
             </button>
+            <div className="h-6 bg-gray-300 dark:bg-gray-600"></div>
+            <div className="relative color-picker-container">
+              <button
+                type="button"
+                onClick={() => setShowColorPicker(!showColorPicker)}
+                className={`${editor.isActive('textStyle', { color: editor.getAttributes('textStyle').color }) ? "text-blue-600" : ""} hover:bg-gray-200 dark:hover:bg-gray-900 p-2 hover:rounded dark:hover:rounded transition-colors`}
+                title="Text Color"
+              >
+                <MdFormatColorText className="text-xl" />
+              </button>
+              {showColorPicker && (
+                <div className="absolute top-full left-0 mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg p-3 z-50 color-palette">
+                  <div className="grid grid-cols-7 gap-2 w-56">
+                    {colors.map((color) => (
+                      <button
+                        key={color}
+                        type="button"
+                        onClick={() => {
+                          editor.chain().focus().setColor(color).run();
+                          setShowColorPicker(false);
+                        }}
+                        className="w-8 h-8 rounded color-swatch"
+                        style={{ backgroundColor: color }}
+                        title={color}
+                      />
+                    ))}
+                  </div>
+                  <div className="mt-2 pt-2 border-t border-gray-200 dark:border-gray-600">
+                    <input
+                      type="color"
+                      onChange={(e) => {
+                        editor.chain().focus().setColor(e.target.value).run();
+                        setShowColorPicker(false);
+                      }}
+                      className="w-full h-8 rounded border border-gray-200 dark:border-gray-600 cursor-pointer"
+                      title="Custom Color"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        editor.chain().focus().unsetColor().run();
+                        setShowColorPicker(false);
+                      }}
+                      className="w-full mt-2 px-3 py-1 text-sm bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                      title="Remove Color"
+                    >
+                      Remove Color
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+            <div className=" h-6 bg-gray-300 dark:bg-gray-600"></div>
+            <button
+              type="button"
+              onClick={handleOpenLinkModal}
+              className={`${editor.isActive('link') ? "text-blue-600" : ""} hover:bg-gray-200 dark:hover:bg-gray-900 p-2 hover:rounded dark:hover:rounded transition-colors`}
+              title={editor.isActive('link') ? "Edit Link" : "Add Link"}
+            >
+              <MdLink className="text-xl" />
+            </button>
+            <div className=" h-6 bg-gray-300 dark:bg-gray-600"></div>
+            <div className="relative table-controls-container">
+              <button
+                type="button"
+                onClick={() => setShowTableControls(!showTableControls)}
+                className={`${editor.isActive('table') ? "text-blue-600" : ""} hover:bg-gray-200 dark:hover:bg-gray-900 p-2 hover:rounded dark:hover:rounded transition-colors`}
+                title="Table Controls"
+              >
+                <MdTableChart className="text-xl" />
+              </button>
+              {showTableControls && (
+                <div className="absolute top-full left-0 mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg p-3 z-50 table-controls">
+                  <div className="space-y-2">
+                    <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Insert Table</div>
+                    <div className="grid grid-cols-3 gap-1">
+                      {[1, 2, 3].map((rows) => (
+                        [1, 2, 3].map((cols) => (
+                          <button
+                            key={`${rows}-${cols}`}
+                            type="button"
+                            onClick={() => {
+                              editor.chain().focus().insertTable({ rows, cols, withHeaderRow: true }).run();
+                              setShowTableControls(false);
+                            }}
+                            className="w-8 h-8 border border-gray-300 dark:border-gray-600 rounded hover:bg-blue-100 dark:hover:bg-blue-900 table-grid-button flex items-center justify-center text-xs"
+                            title={`${rows}×${cols} table`}
+                          >
+                            {rows}×{cols}
+                          </button>
+                        ))
+                      ))}
+                    </div>
+                    <div className="border-t border-gray-200 dark:border-gray-600 pt-2 mt-2">
+                      <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Table Actions</div>
+                      <div className="grid grid-cols-2 gap-1">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            editor.chain().focus().addRowBefore().run();
+                            setShowTableControls(false);
+                          }}
+                          disabled={!editor.isActive('table')}
+                          className="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-200 dark:hover:bg-gray-600 table-action-button disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1"
+                          title="Add Row Above"
+                        >
+                          <MdAdd className="text-sm" />
+                          Row ↑
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            editor.chain().focus().addRowAfter().run();
+                            setShowTableControls(false);
+                          }}
+                          disabled={!editor.isActive('table')}
+                          className="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-200 dark:hover:bg-gray-600 table-action-button disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1"
+                          title="Add Row Below"
+                        >
+                          <MdAdd className="text-sm" />
+                          Row ↓
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            editor.chain().focus().addColumnBefore().run();
+                            setShowTableControls(false);
+                          }}
+                          disabled={!editor.isActive('table')}
+                          className="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-200 dark:hover:bg-gray-600 table-action-button disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1"
+                          title="Add Column Left"
+                        >
+                          <MdAdd className="text-sm" />
+                          Col ←
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            editor.chain().focus().addColumnAfter().run();
+                            setShowTableControls(false);
+                          }}
+                          disabled={!editor.isActive('table')}
+                          className="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-200 dark:hover:bg-gray-600 table-action-button disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1"
+                          title="Add Column Right"
+                        >
+                          <MdAdd className="text-sm" />
+                          Col →
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            editor.chain().focus().deleteRow().run();
+                            setShowTableControls(false);
+                          }}
+                          disabled={!editor.isActive('table')}
+                          className="px-2 py-1 text-xs bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300 rounded hover:bg-red-200 dark:hover:bg-red-800 table-action-button disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1"
+                          title="Delete Row"
+                        >
+                          <MdRemove className="text-sm" />
+                          Del Row
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            editor.chain().focus().deleteColumn().run();
+                            setShowTableControls(false);
+                          }}
+                          disabled={!editor.isActive('table')}
+                          className="px-2 py-1 text-xs bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300 rounded hover:bg-red-200 dark:hover:bg-red-800 table-action-button disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1"
+                          title="Delete Column"
+                        >
+                          <MdRemove className="text-sm" />
+                          Del Col
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            editor.chain().focus().deleteTable().run();
+                            setShowTableControls(false);
+                          }}
+                          disabled={!editor.isActive('table')}
+                          className="px-2 py-1 text-xs bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300 rounded hover:bg-red-200 dark:hover:bg-red-800 table-action-button disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1 col-span-2"
+                          title="Delete Table"
+                        >
+                          <MdDeleteOutline className="text-sm" />
+                          Delete Table
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
         <label className="p-2 hover:bg-gray-200 dark:hover:bg-gray-900 hover:rounded dark:hover:rounded transition-colors cursor-pointer">
           <input
             type="file"
@@ -224,6 +550,86 @@ export default function TipTap({ value, onChange , placeholder = "" }: { value: 
           Characters: {editor?.storage.characterCount.characters() ?? 0}
         </span>
       </div>
+
+      {/* Link Modal */}
+      {showLinkModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="link-modal-container bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 w-96 max-w-md mx-4">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                {editor.isActive('link') ? 'Edit Link' : 'Add Link'}
+              </h3>
+              <button
+                onClick={() => setShowLinkModal(false)}
+                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Link Text <span className="text-gray-500 text-xs">(optional)</span>
+                </label>
+                <input
+                  type="text"
+                  value={linkText}
+                  onChange={(e) => setLinkText(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                  placeholder={editor.isActive('link') ? "Edit link text" : "Enter custom text for the link"}
+                />
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  {editor.isActive('link') 
+                    ? "Edit the link text or leave empty to keep current text" 
+                    : "Leave empty to use selected text or URL as link text"
+                  }
+                </p>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  URL <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="url"
+                  value={linkUrl}
+                  onChange={(e) => setLinkUrl(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                  placeholder="https://example.com"
+                  autoFocus
+                />
+              </div>
+            </div>
+            
+            <div className="flex justify-end space-x-3 mt-6">
+              {editor.isActive('link') && (
+                <button
+                  onClick={handleLinkRemove}
+                  className="px-4 py-2 text-sm font-medium text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md transition-colors"
+                >
+                  Remove Link
+                </button>
+              )}
+              <button
+                onClick={() => setShowLinkModal(false)}
+                className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleLinkSubmit}
+                disabled={!linkUrl.trim()}
+                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-md transition-colors"
+              >
+                {editor.isActive('link') ? 'Update Link' : 'Add Link'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
