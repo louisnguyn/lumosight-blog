@@ -42,7 +42,27 @@ export default function BlogListItem({ post, onSelect , onToggleActive , isManag
         </div>
         
         {/* Content */}
-        <div className="flex flex-col flex-1 p-6 lg:p-8">
+        <div className="flex flex-col flex-1 p-4 lg:p-6">
+          {/* Author Info */}
+          {post.author_name && (
+            <div className="flex items-center gap-3 mb-4">
+              <img
+                src={post.author_avatar || "/profile.jpeg"}
+                alt={post.author_name}
+                className="w-8 h-8 rounded-full object-cover border border-gray-200 dark:border-gray-600"
+              />
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigate(`/user/${post.author_id}`);
+                }}
+                className="text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:underline transition-colors duration-300"
+              >
+                {post.author_name}
+              </button>
+            </div>
+          )}
+          
           <div className="flex items-center gap-4 mb-4">
             <span className="flex gap-2 text-gray-500 dark:text-gray-400 text-sm font-medium flex items-center">
               <FaCalendarAlt/>

@@ -8,6 +8,7 @@ import { FaShareSquare } from 'react-icons/fa';
 import Comments from "../Comments/Comments";
 import { FaCalendarAlt } from 'react-icons/fa';
 import { FaEye } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 export default function Detail({ post, onBack }: { post: any, onBack: () => void }) {
     const [authorName, setAuthorName] = useState<string>("");
     const [authorAvatar, setAuthorAvatar] = useState<string>("");
@@ -15,6 +16,7 @@ export default function Detail({ post, onBack }: { post: any, onBack: () => void
     const [likes, setLikes] = useState(0);
     const [userId, setUserId] = useState<string | null>(null);
     const [copied, setCopied] = useState(false);
+    const navigate = useNavigate();
     useEffect(() => {
       if (post && typeof post.likes === "number") {
         setLikes(post.likes);
@@ -105,7 +107,7 @@ export default function Detail({ post, onBack }: { post: any, onBack: () => void
       <section className="relative bg-gradient-to-br from-blue-600 via-blue-700 to-purple-800 dark:from-gray-900 dark:via-gray-800 dark:to-blue-900 text-white py-16">
         <div className="absolute inset-0 bg-black/10"></div>
         <div className="relative max-w-7xl mx-auto px-6">
-          <button 
+        <button 
             onClick={onBack} 
             className="mb-8 inline-flex items-center px-6 py-3 bg-white/30 backdrop-blur-md text-white font-semibold rounded-xl hover:bg-white/50 hover:scale-105 active:scale-95 transition-all duration-300 border border-white/20 hover:border-white/40 shadow-lg hover:shadow-xl"
           >
@@ -129,7 +131,12 @@ export default function Detail({ post, onBack }: { post: any, onBack: () => void
                   alt={authorName}
                   className="w-12 h-12 rounded-full object-cover border-2 border-white/30"
                 />
-                <span className="font-semibold text-center">{authorName}</span>
+                <button
+                  onClick={() => navigate(`/user/${post.author_id}`)}
+                  className="font-semibold text-center hover:text-white hover:underline transition-colors duration-300 cursor-pointer"
+                >
+                  {authorName}
+                </button>
               </div>
               <div className="flex items-center gap-1">
                 <FaCalendarAlt className="w-4 h-4"/>
@@ -150,7 +157,7 @@ export default function Detail({ post, onBack }: { post: any, onBack: () => void
       </section>
 
       {/* Main Content */}
-      <div className="max-w-4xl mx-auto px-6 py-12">
+      <div className="max-w-4xl mx-auto px-4 py-12">
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden border border-gray-200 dark:border-gray-700">
           {/* Featured Image */}
           <div className="relative overflow-hidden">
@@ -163,7 +170,7 @@ export default function Detail({ post, onBack }: { post: any, onBack: () => void
           </div>
 
           {/* Article Content */}
-          <div className="p-8 lg:p-12">
+          <div className="p-6 lg:p-8">
             {/* Tags */}
             {post.tags && (
               <div className="flex gap-2 mb-8 flex-wrap">

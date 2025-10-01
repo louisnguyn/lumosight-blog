@@ -11,6 +11,7 @@ import { Analytics } from "@vercel/analytics/react"
 import PostDetailPage from "./pages/DetailPage"
 import BlogPage from "./pages/BlogPage";
 import OurStoryPage from "./pages/OurStoryPage";
+import UserPostsPage from "./pages/UserPostsPage";
 function App() {
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950 transition-colors flex flex-col">
@@ -21,6 +22,7 @@ function App() {
           <Route path="/blog" element={<BlogPage />} />
           <Route path="/our-story" element={<OurStoryPage />} />
           <Route path="/post/:id" element={<PostDetailPage />} />
+          <Route path="/user/:userId" element={<UserPostsPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/post-management" element={<PostManagementPage />} />

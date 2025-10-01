@@ -20,12 +20,39 @@ function MainPage() {
   }, []);
 
   async function fetchPosts(filter?: { category?: string, tag?: string, search?: string }) {
-    let query = supabase.from('posts').select('*').eq('active', true);
-    if (filter?.category) query = query.ilike('categories', filter.category.toLowerCase());
-    if (filter?.tag) query = query.ilike('tags', `%${filter.tag.toLowerCase()}%`);
-    if (filter?.search) query = query.or(`title.ilike.%${filter.search}%,content.ilike.%${filter.search}%`);
-    const { data, error } = await query;
-    setPosts(error ? [] : data ?? []);
+    try {
+      // First, get the posts
+      let query = supabase.from('posts').select('*').eq('active', true);
+      if (filter?.category) query = query.ilike('categories', filter.category.toLowerCase());
+      if (filter?.tag) query = query.ilike('tags', `%${filter.tag.toLowerCase()}%`);
+      if (filter?.search) query = query.or(`title.ilike.%${filter.search}%,content.ilike.%${filter.search}%`);
+      
+      const { data: postsData, error: postsError } = await query;
+      if (postsError) throw postsError;
+
+      const authorIds = [...new Set(postsData?.map(post => post.author_id) || [])];
+      
+      const { data: profilesData, error: profilesError } = await supabase
+        .from('profile')
+        .select('user_id, full_name, avatar_url')
+        .in('user_id', authorIds);
+
+      if (profilesError) throw profilesError;
+      const profilesMap = profilesData?.reduce((acc: any, profile: any) => {
+        acc[profile.user_id] = profile;
+        return acc;
+      }, {}) || {};
+      const postsWithAuthors = postsData?.map(post => ({
+        ...post,
+        author_name: profilesMap[post.author_id]?.full_name || 'Unknown Author',
+        author_avatar: profilesMap[post.author_id]?.avatar_url || '/profile.jpeg'
+      })) || [];
+
+      setPosts(postsWithAuthors);
+    } catch (error) {
+      console.error('Error fetching posts:', error);
+      setPosts([]);
+    }
   }
 
   const handleHeaderSearch = (search?: string) => {
@@ -44,7 +71,6 @@ function MainPage() {
     <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-900">
       <Header />
       
-      {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-blue-600 via-blue-700 to-purple-800 dark:from-gray-900 dark:via-gray-800 dark:to-blue-900 text-white py-16">
         <div className="absolute inset-0 bg-black/10"></div>
         <div className="relative max-w-7xl mx-auto px-6">

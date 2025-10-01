@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Header from "../components/Header/Header";
 import Footer from "../components/Footer/Footer";
 import { supabase } from "../db/supabaseClient";
-import { FaArrowRight, FaUser, FaCalendarAlt, FaEye, FaHeart } from "react-icons/fa";
+import { FaArrowRight, FaCalendarAlt, FaEye, FaHeart } from "react-icons/fa";
 import "./MainPage.css";
 import { BsFilePost } from 'react-icons/bs';
 interface Post {
@@ -31,6 +31,7 @@ function MainPage() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [topAuthors, setTopAuthors] = useState<TopAuthor[]>([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchRecentPosts();
@@ -128,7 +129,14 @@ function MainPage() {
       }, {});
 
       const topAuthors = Object.values(authorStats || {})
-        .sort((a: any, b: any) => b.posts_count - a.posts_count)
+        .sort((a: any, b: any) => {
+          // First by post count (descending)
+          if (b.posts_count !== a.posts_count) {
+            return b.posts_count - a.posts_count;
+          }
+          // If post count is equal, then by total views (descending)
+          return b.total_views - a.total_views;
+        })
         .slice(0, 3);
 
       setTopAuthors(topAuthors as TopAuthor[]);
@@ -167,7 +175,7 @@ function MainPage() {
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-blue-700 to-purple-800 dark:from-gray-900 dark:via-gray-800 dark:to-blue-900">
         <div className="absolute inset-0 bg-black/10"></div>
-        <div className="relative max-w-7xl mx-auto px-6 py-20 sm:py-32">
+        <div className="relative max-w-7xl mx-auto px-4 py-20 sm:py-32">
           <div className="text-center">
             <h1 className="text-4xl sm:text-6xl font-bold text-white mb-6 animate-fade-in-up">
               Welcome to <span className="text-yellow-400">Lumosight</span>
@@ -201,7 +209,7 @@ function MainPage() {
 
       {/* Recent Posts Section */}
       <section className="py-16 bg-white dark:bg-gray-800">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
               Latest Stories
@@ -224,7 +232,7 @@ function MainPage() {
                   className="bg-white dark:bg-gray-700 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 overflow-hidden group"
                   style={{ animationDelay: `${index * 100}ms` }}
                 >
-                  <div className="p-6">
+                  <div className="p-4">
                     <div className="flex items-center mb-4">
                       <img
                         src={post.author_avatar}
@@ -232,7 +240,15 @@ function MainPage() {
                         className="w-10 h-10 rounded-full object-cover mr-3"
                       />
                       <div>
-                        <p className="font-semibold text-gray-900 dark:text-white">{post.author_name}</p>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/user/${post.author_id}`);
+                          }}
+                          className="font-semibold text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 hover:underline transition-colors duration-300 text-left"
+                        >
+                          {post.author_name}
+                        </button>
                         <p className="text-sm text-gray-500 dark:text-gray-400 flex items-center">
                           <FaCalendarAlt className="mr-1" />
                           {formatDate(post.created_at)}
@@ -286,7 +302,7 @@ function MainPage() {
 
       {/* Top Contributors Section */}
       <section className="py-16 bg-gray-50 dark:bg-gray-900">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
               Top Contributors
@@ -314,9 +330,12 @@ function MainPage() {
                   </div>
                 </div>
                 
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                <button
+                  onClick={() => navigate(`/user/${author.author_id}`)}
+                  className="text-2xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors hover:underline"
+                >
                   {author.author_name}
-                </h3>
+                </button>
                 
                 <div className="space-y-2 mb-6">
                   <div className="flex items-center justify-center text-gray-600 dark:text-gray-300">
@@ -329,13 +348,13 @@ function MainPage() {
                   </div>
                 </div>
                 
-                {/* <Link 
-                  to={`/blog?author=${author.author_id}`}
+                <button
+                  onClick={() => navigate(`/user/${author.author_id}`)}
                   className="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 hover:scale-105 active:scale-95 transition-all duration-300"
                 >
                   View Posts
                   <FaArrowRight className="ml-2" />
-                </Link> */}
+                </button>
               </div>
             ))}
           </div>
