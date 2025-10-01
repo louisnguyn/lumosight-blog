@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route} from "react-router-dom";
+import { HelmetProvider } from "react-helmet-async";
 import MainPage from "./pages/MainPage"
 import LoginPage from "./pages/LoginPage"
 import SignupPage from "./pages/SignupPage"
@@ -14,25 +15,27 @@ import OurStoryPage from "./pages/OurStoryPage";
 import UserPostsPage from "./pages/UserPostsPage";
 function App() {
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-950 transition-colors flex flex-col">
-      <ThemeSwitch />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<MainPage />} />
-          <Route path="/blog" element={<BlogPage />} />
-          <Route path="/our-story" element={<OurStoryPage />} />
-          <Route path="/post/:id" element={<PostDetailPage />} />
-          <Route path="/user/:userId" element={<UserPostsPage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/signup" element={<SignupPage />} />
-          <Route path="/post-management" element={<PostManagementPage />} />
-          <Route path="/user-info" element={<UserInformationPage />} />
-          <Route path="/change-password" element={<ChangePasswordPage />} />
-          <Route path="/privacy" element={<PrivacyPage />} />
-        </Routes>
-        <Analytics />
-      </BrowserRouter>
-    </div>
+    <HelmetProvider>
+      <div className="min-h-screen bg-white dark:bg-gray-950 transition-colors flex flex-col">
+        <ThemeSwitch />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<MainPage />} />
+            <Route path="/blog" element={<BlogPage />} />
+            <Route path="/our-story" element={<OurStoryPage />} />
+            <Route path="/post/:id" element={<PostDetailPage />} />
+            <Route path="/user/:userId" element={<UserPostsPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/signup" element={<SignupPage />} />
+            <Route path="/post-management" element={<PostManagementPage />} />
+            <Route path="/user-info" element={<UserInformationPage />} />
+            <Route path="/change-password" element={<ChangePasswordPage />} />
+            <Route path="/privacy" element={<PrivacyPage />} />
+          </Routes>
+          <Analytics />
+        </BrowserRouter>
+      </div>
+    </HelmetProvider>
   )
 }
 
