@@ -281,6 +281,87 @@ button:hover{
   }
 }
 
+/* Bubble Menu Styles */
+.bubble-menu {
+  z-index: 50;
+}
+
+.bubble-menu .tippy-box {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.bubble-menu .tippy-arrow {
+  display: none;
+}
+
+.bubble-menu .tippy-content {
+  padding: 0;
+}
+
+/* Bubble menu animations */
+.bubble-menu[data-state="show"] {
+  animation: bubbleMenuShow 0.2s ease-out;
+}
+
+.bubble-menu[data-state="hide"] {
+  animation: bubbleMenuHide 0.15s ease-in;
+}
+
+@keyframes bubbleMenuShow {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes bubbleMenuHide {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(10px) scale(0.95);
+  }
+}
+
+/* Bubble Color Picker Styles */
+.bubble-color-palette {
+  animation: colorPaletteSlideIn 0.2s ease-out;
+}
+
+@keyframes colorPaletteSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.bubble-color-picker-container .color-swatch {
+  transition: all 0.2s ease;
+  border: 2px solid transparent;
+}
+
+.bubble-color-picker-container .color-swatch:hover {
+  transform: scale(1.1);
+  border-color: #3b82f6;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.bubble-color-picker-container .color-swatch:active {
+  transform: scale(0.95);
+}
+
 
 
 

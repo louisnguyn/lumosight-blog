@@ -22,6 +22,7 @@ import { TableRow } from '@tiptap/extension-table-row'
 import { TableCell } from '@tiptap/extension-table-cell'
 import { TableHeader } from '@tiptap/extension-table-header'
 import Link from '@tiptap/extension-link'
+import { BubbleMenu } from '@tiptap/react/menus'
 import { BsTypeH1 } from 'react-icons/bs';
 import { FaBold } from 'react-icons/fa';
 import { FaItalic } from 'react-icons/fa';
@@ -58,6 +59,7 @@ export default function TipTap({ value, onChange , placeholder = "" }: { value: 
   const [showLinkModal, setShowLinkModal] = useState(false);
   const [linkUrl, setLinkUrl] = useState('');
   const [linkText, setLinkText] = useState('');
+  const [showBubbleColorPicker, setShowBubbleColorPicker] = useState(false);
   
   const colors = [
     '#000000', '#374151', '#6B7280', '#9CA3AF', '#D1D5DB', '#F3F4F6', '#FFFFFF',
@@ -129,13 +131,16 @@ export default function TipTap({ value, onChange , placeholder = "" }: { value: 
       if (showLinkModal && !(event.target as Element).closest('.link-modal-container')) {
         setShowLinkModal(false);
       }
+      if (showBubbleColorPicker && !(event.target as Element).closest('.bubble-color-picker-container')) {
+        setShowBubbleColorPicker(false);
+      }
     };
 
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [showColorPicker, showTableControls, showLinkModal]);
+  }, [showColorPicker, showTableControls, showLinkModal, showBubbleColorPicker]);
 
   // Handle link modal opening
   const handleOpenLinkModal = () => {
@@ -545,6 +550,147 @@ export default function TipTap({ value, onChange , placeholder = "" }: { value: 
         </label>
         </div>
         <EditorContent editor={editor} className="min-h-30 px-3 focus:outline-none py-2" />
+        
+        {/* Official Bubble Menu with positioning options */}
+        {editor && (
+          <BubbleMenu 
+            editor={editor}
+            className="bubble-menu"
+          >
+            <div className="flex items-center gap-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg p-1">
+              <button
+                type="button"
+                onClick={() => editor.chain().focus().toggleBold().run()}
+                className={`${editor.isActive("bold") ? "bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-300" : "hover:bg-gray-100 dark:hover:bg-gray-700"} p-2 rounded transition-colors`}
+                title="Bold"
+              >
+                <FaBold className="w-4 h-4" />
+              </button>
+              
+              <button
+                type="button"
+                onClick={() => editor.chain().focus().toggleItalic().run()}
+                className={`${editor.isActive("italic") ? "bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-300" : "hover:bg-gray-100 dark:hover:bg-gray-700"} p-2 rounded transition-colors`}
+                title="Italic"
+              >
+                <FaItalic className="w-4 h-4" />
+              </button>
+              
+              <button
+                type="button"
+                onClick={() => editor.chain().focus().toggleStrike().run()}
+                className={`${editor.isActive("strike") ? "bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-300" : "hover:bg-gray-100 dark:hover:bg-gray-700"} p-2 rounded transition-colors`}
+                title="Strikethrough"
+              >
+                <FaStrikethrough className="w-4 h-4" />
+              </button>
+              
+              <button
+                type="button"
+                onClick={() => editor.chain().focus().toggleUnderline().run()}
+                className={`${editor.isActive('underline') ? "bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-300" : "hover:bg-gray-100 dark:hover:bg-gray-700"} p-2 rounded transition-colors`}
+                title="Underline"
+              >
+                <FaUnderline className="w-4 h-4" />
+              </button>
+              
+              <button
+                type="button"
+                onClick={() => editor.chain().focus().toggleHighlight().run()}
+                className={`${editor.isActive('highlight') ? "bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-300" : "hover:bg-gray-100 dark:hover:bg-gray-700"} p-2 rounded transition-colors`}
+                title="Highlight"
+              >
+                <FaHighlighter className="w-4 h-4" />
+              </button>
+              
+              <div className="w-px h-6 bg-gray-300 dark:bg-gray-600 mx-1"></div>
+              
+              <div className="relative bubble-color-picker-container">
+                <button
+                  type="button"
+                  onClick={() => setShowBubbleColorPicker(!showBubbleColorPicker)}
+                  className={`${editor.isActive('textStyle', { color: editor.getAttributes('textStyle').color }) ? "bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-300" : "hover:bg-gray-100 dark:hover:bg-gray-700"} p-2 rounded transition-colors`}
+                  title="Text Color"
+                >
+                  <MdFormatColorText className="w-4 h-4" />
+                </button>
+                {showBubbleColorPicker && (
+                  <div className="absolute top-full left-0 mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg p-3 z-50 bubble-color-palette">
+                    <div className="grid grid-cols-7 gap-1 w-48">
+                      {colors.map((color) => (
+                        <button
+                          key={color}
+                          type="button"
+                          onClick={() => {
+                            editor.chain().focus().setColor(color).run();
+                            setShowBubbleColorPicker(false);
+                          }}
+                          className="w-6 h-6 rounded color-swatch"
+                          style={{ backgroundColor: color }}
+                          title={color}
+                        />
+                      ))}
+                    </div>
+                    <div className="mt-2 pt-2 border-t border-gray-200 dark:border-gray-600">
+                      <input
+                        type="color"
+                        onChange={(e) => {
+                          editor.chain().focus().setColor(e.target.value).run();
+                          setShowBubbleColorPicker(false);
+                        }}
+                        className="w-full h-6 rounded border border-gray-200 dark:border-gray-600 cursor-pointer"
+                        title="Custom Color"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          editor.chain().focus().unsetColor().run();
+                          setShowBubbleColorPicker(false);
+                        }}
+                        className="w-full mt-1 px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                        title="Remove Color"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+              
+              <div className="w-px h-6 bg-gray-300 dark:bg-gray-600 mx-1"></div>
+              
+              <button
+                type="button"
+                onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
+                className={`${editor.isActive("heading", { level: 1 }) ? "bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-300" : "hover:bg-gray-100 dark:hover:bg-gray-700"} p-2 rounded transition-colors`}
+                title="Heading 1"
+              >
+                <BsTypeH1 className="w-4 h-4" />
+              </button>
+              
+              <button
+                type="button"
+                onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+                className={`${editor.isActive("heading", { level: 2 }) ? "bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-300" : "hover:bg-gray-100 dark:hover:bg-gray-700"} p-2 rounded transition-colors`}
+                title="Heading 2"
+              >
+                <BsTypeH2 className="w-4 h-4" />
+              </button>
+              
+              <div className="w-px h-6 bg-gray-300 dark:bg-gray-600 mx-1"></div>
+              
+              <button
+                type="button"
+                onClick={handleOpenLinkModal}
+                className={`${editor.isActive('link') ? "bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-300" : "hover:bg-gray-100 dark:hover:bg-gray-700"} p-2 rounded transition-colors`}
+                title={editor.isActive('link') ? "Edit Link" : "Add Link"}
+              >
+                <MdLink className="w-4 h-4" />
+              </button>
+            </div>
+          </BubbleMenu>
+        )}
+        
       <div className="flex justify-end gap-6 px-3 py-2 text-sm text-gray-500 dark:text-gray-400">
         <span>
           Characters: {editor?.storage.characterCount.characters() ?? 0}
