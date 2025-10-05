@@ -20,6 +20,7 @@ export default function PostForm({ mode, post, onSuccess, onCancel }: {
   const [imagePreviewLoading, setImagePreviewLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<{[key: string]: string}>({});
 
   useEffect(() => {
     if (mode === "edit" && post) {
@@ -31,6 +32,81 @@ export default function PostForm({ mode, post, onSuccess, onCancel }: {
       setDescription(post.description || "");
     }
   }, [mode, post]);
+
+  // Validation functions
+  const validateField = (field: string, value: string): string => {
+    switch (field) {
+      case 'title':
+        if (!value.trim()) return 'Title is required';
+        if (value.trim().length < 3) return 'Title must be at least 3 characters';
+        if (value.trim().length > 200) return 'Title must be less than 200 characters';
+        return '';
+      case 'description':
+        if (!value.trim()) return 'Description is required';
+        if (value.trim().length < 10) return 'Description must be at least 10 characters';
+        if (value.trim().length > 500) return 'Description must be less than 500 characters';
+        return '';
+      case 'content':
+        if (!value.trim()) return 'Content is required';
+        if (value.trim().length < 50) return 'Content must be at least 50 characters';
+        return '';
+      case 'categories':
+        if (!value.trim()) return 'Categories are required';
+        if (value.trim().length < 2) return 'Categories must be at least 2 characters';
+        return '';
+      case 'tags':
+        if (!value.trim()) return 'Tags are required';
+        if (value.trim().length < 2) return 'Tags must be at least 2 characters';
+        return '';
+      default:
+        return '';
+    }
+  };
+
+  const validateForm = (): boolean => {
+    const errors: {[key: string]: string} = {};
+    
+    errors.title = validateField('title', title);
+    errors.description = validateField('description', description);
+    errors.content = validateField('content', content);
+    errors.categories = validateField('categories', categories);
+    errors.tags = validateField('tags', tags);
+    
+    setValidationErrors(errors);
+    
+    // Return true if no errors
+    return Object.values(errors).every(error => error === '');
+  };
+
+  const handleFieldChange = (field: string, value: string) => {
+    // Clear validation error for this field when user starts typing
+    if (validationErrors[field]) {
+      setValidationErrors(prev => ({
+        ...prev,
+        [field]: ''
+      }));
+    }
+    
+    // Update the field value
+    switch (field) {
+      case 'title':
+        setTitle(value);
+        break;
+      case 'description':
+        setDescription(value);
+        break;
+      case 'content':
+        setContent(value);
+        break;
+      case 'categories':
+        setCategories(value);
+        break;
+      case 'tags':
+        setTags(value);
+        break;
+    }
+  };
+
     const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
       if (file) {
@@ -114,6 +190,12 @@ export default function PostForm({ mode, post, onSuccess, onCancel }: {
     setLoading(true);
     setError(null);
 
+    // Validate form before submission
+    if (!validateForm()) {
+      setLoading(false);
+      return;
+    }
+
     const { data: sessionData } = await supabase.auth.getSession();
     const author_id = sessionData?.session?.user?.id;
 
@@ -169,25 +251,35 @@ export default function PostForm({ mode, post, onSuccess, onCancel }: {
   return (
     <form onSubmit={handleSubmit} className="max-w-xl mx-auto">
       <h2 className="text-2xl font-bold mb-4 text-center dark:text-white">{mode === "create" ? "Create Post" : "Edit Post"}</h2>
-      <label className="block mb-1 font-semibold dark:text-white" htmlFor="title">Title</label>
+      <label className="block mb-1 font-semibold dark:text-white" htmlFor="title">Title <span className="text-red-500">*</span></label>
       <input
         id="title"
         type="text"
-        placeholder="Title"
+        placeholder="Enter post title"
         value={title}
-        onChange={e => setTitle(e.target.value)}
-        className="w-full mb-3 px-3 py-2 rounded border bg-white dark:bg-gray-800 dark:text-white"
-        required
+        onChange={e => handleFieldChange('title', e.target.value)}
+        className={`w-full mb-1 px-3 py-2 rounded border bg-white dark:bg-gray-800 dark:text-white ${
+          validationErrors.title ? 'border-red-500 focus:border-red-500' : 'border-gray-300 dark:border-gray-600 focus:border-blue-500'
+        }`}
       />
-      <label className="block mb-1 font-semibold dark:text-white" htmlFor="description">Description</label>
+      {validationErrors.title && (
+        <p className="text-red-500 text-sm mb-3">{validationErrors.title}</p>
+      )}
+      
+      <label className="block mb-1 font-semibold dark:text-white" htmlFor="description">Description <span className="text-red-500">*</span></label>
       <input
         id="description"
         type="text"
-        placeholder="Description"
+        placeholder="Enter post description"
         value={description}
-        onChange={e => setDescription(e.target.value)}
-        className="w-full mb-3 px-3 py-2 rounded border bg-white dark:bg-gray-800 dark:text-white"
+        onChange={e => handleFieldChange('description', e.target.value)}
+        className={`w-full mb-1 px-3 py-2 rounded border bg-white dark:bg-gray-800 dark:text-white ${
+          validationErrors.description ? 'border-red-500 focus:border-red-500' : 'border-gray-300 dark:border-gray-600 focus:border-blue-500'
+        }`}
       />
+      {validationErrors.description && (
+        <p className="text-red-500 text-sm mb-3">{validationErrors.description}</p>
+      )}
       {/* <textarea
         placeholder="Content"
         value={content}
@@ -196,27 +288,44 @@ export default function PostForm({ mode, post, onSuccess, onCancel }: {
         rows={6}
         required
       /> */}
-      <label className="block mb-1 font-semibold dark:text-white" htmlFor="content">Content</label>
-      <TipTap value={content} onChange={setContent} placeholder="Write your post content here..."/>
-      <label className="block mb-1 font-semibold dark:text-white" htmlFor="categories">Categories</label>
+      <label className="block mb-1 font-semibold dark:text-white" htmlFor="content">Content <span className="text-red-500">*</span></label>
+      <div className={` ${validationErrors.content ? 'border border-red-500 rounded' : ''}`}>
+        <TipTap value={content} onChange={(value) => handleFieldChange('content', value)} placeholder="Write your post content here..."/>
+      </div>
+      {validationErrors.content && (
+        <p className="text-red-500 text-sm mb-3">{validationErrors.content}</p>
+      )}
+      
+      <label className="block mb-1 font-semibold dark:text-white" htmlFor="categories">Categories <span className="text-red-500">*</span></label>
       <input
         id="categories"
         type="text"
-        placeholder="Categories"
+        placeholder="Enter categories"
         value={categories}
-        onChange={e => setCategories(e.target.value)}
-        className="w-full mb-3 px-3 py-2 rounded border bg-white dark:bg-gray-800 dark:text-white"
+        onChange={e => handleFieldChange('categories', e.target.value)}
+        className={`w-full mb-1 px-3 py-2 rounded border bg-white dark:bg-gray-800 dark:text-white ${
+          validationErrors.categories ? 'border-red-500 focus:border-red-500' : 'border-gray-300 dark:border-gray-600 focus:border-blue-500'
+        }`}
       />
-      <label className="block mb-1 font-semibold dark:text-white" htmlFor="tags">Tags (comma separated)</label>
+      {validationErrors.categories && (
+        <p className="text-red-500 text-sm mb-3">{validationErrors.categories}</p>
+      )}
+      
+      <label className="block mb-1 font-semibold dark:text-white" htmlFor="tags">Tags (comma separated) <span className="text-red-500">*</span></label>
       <input
         id="tags"
         type="text"
-        placeholder="Tags (comma separated)"
+        placeholder="Enter tags separated by commas"
         value={tags}
-        onChange={e => setTags(e.target.value)}
-        className="w-full mb-3 px-3 py-2 rounded border bg-white dark:bg-gray-800 dark:text-white"
+        onChange={e => handleFieldChange('tags', e.target.value)}
+        className={`w-full mb-1 px-3 py-2 rounded border bg-white dark:bg-gray-800 dark:text-white ${
+          validationErrors.tags ? 'border-red-500 focus:border-red-500' : 'border-gray-300 dark:border-gray-600 focus:border-blue-500'
+        }`}
       />
-      {/* <label className="block mb-1 font-semibold dark:text-white" htmlFor="image">Upload Image</label> */}
+      {validationErrors.tags && (
+        <p className="text-red-500 text-sm mb-3">{validationErrors.tags}</p>
+      )}
+      <label className="block mb-1 font-semibold dark:text-white" htmlFor="image">Upload Image <span className="text-gray-500 text-sm">(optional)</span></label>
       <div className="mb-4 flex sm:flex-row flex-col justify-center">
       <input
         id="image"

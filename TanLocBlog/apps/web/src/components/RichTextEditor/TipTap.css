@@ -2,6 +2,9 @@
     :first-child {
         margin-top: 0;
     }
+    :last-child {
+        margin-bottom: 0;
+    }
     h1,
     h2 {
         font-weight: bold;
@@ -68,6 +71,10 @@ button:hover{
 .ProseMirror:focus {
   outline: none;
   box-shadow: none;
+}
+
+.ProseMirror {
+  padding-bottom: 0.5rem;
 }
 
 /* Color Picker Styles */

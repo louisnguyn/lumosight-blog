@@ -317,8 +317,8 @@ export default function TipTap({ value, onChange , placeholder = "" }: { value: 
   };
 
   return (
-    <div className="border rounded bg-white mb-5 dark:bg-gray-800 dark:text-white">
-        <div className="post-tool flex flex-wrap border-b bg-white-50 dark:bg-gray-700 p-2">
+    <div className="border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800 dark:text-white">
+        <div className="post-tool flex flex-wrap border-b border-gray-300 dark:border-gray-600 bg-white-50 dark:bg-gray-700 p-2">
             <button
             type="button"
             onClick={() => editor.chain().focus().toggleBold().run()}
