@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { FaCalendarAlt } from 'react-icons/fa';
 import { FaEye } from 'react-icons/fa';
 import { FaHeart } from 'react-icons/fa';
+import DefaultPostImage from '../../utils/DefaultPostImage';
 export default function BlogListItem({ post, onSelect , onToggleActive , isManagement = false}: { post: any, onSelect: (post: any) => void , onToggleActive?: (post: any,active: boolean) => void,  isManagement?: boolean }) {
   if (!post) return null; 
   const formattedDate = post.updated_at
@@ -25,12 +26,20 @@ export default function BlogListItem({ post, onSelect , onToggleActive , isManag
       <div className="flex flex-col lg:flex-row">
         {/* Image */}
         <div className="flex-shrink-0 relative overflow-hidden bg-gray-200 dark:bg-gray-700">
-          <img
-            src={post.image || "/default-blog.jpg"}
-            alt={post.title}
-            className="w-full lg:w-[400px] h-[250px] lg:h-[280px] object-cover object-center"
-            style={{ minHeight: '100%' }}
-          />
+          {post.image ? (
+            <img
+              src={post.image}
+              alt={post.title}
+              className="w-full lg:w-[400px] h-[250px] lg:h-[280px] object-cover object-center"
+              style={{ minHeight: '100%' }}
+            />
+          ) : (
+            <DefaultPostImage
+              title={post.title}
+              className="w-full lg:w-[400px] h-[250px] lg:h-[280px]"
+              style={{ minHeight: '100%' }}
+            />
+          )}
           <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
           {post.categories && (
             <div className="absolute top-4 left-4">

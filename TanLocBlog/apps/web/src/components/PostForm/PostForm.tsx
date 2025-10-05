@@ -3,6 +3,7 @@ import { supabase } from "../../db/supabaseClient";
 import TipTap from "../RichTextEditor/TipTap"
 import { FiUpload } from 'react-icons/fi';
 import { CgSpinner } from 'react-icons/cg';
+import { FiX } from 'react-icons/fi';
 export default function PostForm({ mode, post, onSuccess, onCancel }: {
   mode: "create" | "edit";
   post?: any;
@@ -30,9 +31,14 @@ export default function PostForm({ mode, post, onSuccess, onCancel }: {
       setDescription(post.description || "");
     }
   }, [mode, post]);
-    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
       if (file) {
+        // If there's an existing image URL (not a local preview), delete it from bucket
+        if (image && !image.startsWith('blob:')) {
+          await deleteImageFromBucket(image);
+        }
+        
         setImageFile(file);
         setImagePreviewLoading(true);
         setTimeout(() => {
@@ -40,6 +46,50 @@ export default function PostForm({ mode, post, onSuccess, onCancel }: {
           setImagePreviewLoading(false);
         }, 2000);
       }
+    };
+
+    const deleteImageFromBucket = async (imageUrl: string) => {
+      try {
+        const url = new URL(imageUrl);
+        const pathParts = url.pathname.split('/').filter(part => part !== '');
+        let bucketName = '';
+        let filePath = '';
+        if (pathParts.includes('image_upload')) {
+          const bucketIndex = pathParts.indexOf('image_upload');
+          bucketName = pathParts[bucketIndex];
+          filePath = pathParts.slice(bucketIndex + 1).join('/');
+        } else {
+          bucketName = pathParts[pathParts.length - 2] || 'image_upload';
+          filePath = pathParts[pathParts.length - 1] || '';
+        }
+        
+        if (bucketName === 'image_upload' && filePath) {
+          const { error } = await supabase.storage
+            .from('image_upload')
+            .remove([filePath]);
+          
+          if (error) {
+            console.error('Error deleting image from bucket:', error);
+          }
+        }
+      } catch (error) {
+        console.error('Error parsing image URL for deletion:', error);
+      }
+    };
+
+    const handleRemoveImage = async () => {
+      if (image && !image.startsWith('blob:')) {
+        await deleteImageFromBucket(image);
+      }
+      setTimeout(() => {
+        setImage("");
+        setImageFile(null);
+        setImagePreviewLoading(false);
+        const fileInput = document.getElementById("image") as HTMLInputElement;
+        if (fileInput) {
+          fileInput.value = "";
+        }
+      }, 100);
     };
 
     const uploadImage = async (): Promise<string | null> => {
@@ -191,11 +241,21 @@ export default function PostForm({ mode, post, onSuccess, onCancel }: {
       ) : (
         image && (
           <div className="mb-4 flex justify-center">
-            <img
-              src={image}
-              alt="Preview"
-              className="rounded-tr-xl rounded-br-xl object-cover w-[320px] h-[220px] bg-gray-200"
-            />
+            <div className="relative inline-block">
+              <img
+                src={image}
+                alt="Preview"
+                className="rounded-tr-xl rounded-br-xl object-cover w-[320px] h-[220px] bg-gray-200"
+              />
+              <button
+                type="button"
+                onClick={handleRemoveImage}
+                className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full p-2 shadow-lg transition-colors duration-200 z-10"
+                title="Remove image"
+              >
+                <FiX className="w-4 h-4" />
+              </button>
+            </div>
           </div>
         )
       )}

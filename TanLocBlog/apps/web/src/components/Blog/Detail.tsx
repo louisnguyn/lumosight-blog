@@ -9,6 +9,7 @@ import Comments from "../Comments/Comments";
 import { FaCalendarAlt } from 'react-icons/fa';
 import { FaEye } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
+import DefaultPostImage from '../../utils/DefaultPostImage';
 export default function Detail({ post, onBack }: { post: any, onBack: () => void }) {
     const [authorName, setAuthorName] = useState<string>("");
     const [authorAvatar, setAuthorAvatar] = useState<string>("");
@@ -157,11 +158,18 @@ export default function Detail({ post, onBack }: { post: any, onBack: () => void
       <div className="max-w-4xl mx-auto px-4 py-12">
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden border border-gray-200 dark:border-gray-700">
           <div className="relative overflow-hidden">
-            <img
-              src={post.image || "/default-blog.jpg"}
-              alt={post.title}
-              className="w-full"
-            />
+            {post.image ? (
+              <img
+                src={post.image}
+                alt={post.title}
+                className="w-full"
+              />
+            ) : (
+              <DefaultPostImage
+                title={post.title}
+                className="w-full h-64 md:h-80 lg:h-96"
+              />
+            )}
             <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
           </div>
 

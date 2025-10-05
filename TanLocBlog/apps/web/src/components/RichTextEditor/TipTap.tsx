@@ -142,6 +142,51 @@ export default function TipTap({ value, onChange , placeholder = "" }: { value: 
     };
   }, [showColorPicker, showTableControls, showLinkModal, showBubbleColorPicker]);
 
+  // Handle image deletion from storage when images are removed from editor
+  useEffect(() => {
+    if (!editor) return;
+
+    let previousImages: string[] = [];
+    
+    // Store initial images
+    editor.state.doc.descendants((node: any) => {
+      if (node.type.name === 'image' && node.attrs.src) {
+        previousImages.push(node.attrs.src);
+      }
+    });
+
+    const handleUpdate = () => {
+      const currentImages: string[] = [];
+      
+      // Collect current images
+      editor.state.doc.descendants((node: any) => {
+        if (node.type.name === 'image' && node.attrs.src) {
+          currentImages.push(node.attrs.src);
+        }
+      });
+      
+      // Find images that were removed
+      const removedImages = previousImages.filter(img => !currentImages.includes(img));
+      
+      // Delete removed images from storage
+      removedImages.forEach(imageUrl => {
+        if (!imageUrl.startsWith('blob:')) {
+          deleteImageFromBucket(imageUrl);
+        }
+      });
+      
+      // Update previous images for next comparison
+      previousImages = currentImages;
+    };
+
+    // Listen to editor updates
+    editor.on('update', handleUpdate);
+    
+    return () => {
+      editor.off('update', handleUpdate);
+    };
+  }, [editor]);
+
   // Handle link modal opening
   const handleOpenLinkModal = () => {
     if (!editor) return;
@@ -215,6 +260,36 @@ export default function TipTap({ value, onChange , placeholder = "" }: { value: 
     const isAlignActive = (align: string) =>
     editor.isActive('paragraph', { textAlign: align }) ||
     editor.isActive('heading', { textAlign: align });
+  const deleteImageFromBucket = async (imageUrl: string) => {
+    try {
+      const url = new URL(imageUrl);
+      const pathParts = url.pathname.split('/').filter(part => part !== '');
+      let bucketName = '';
+      let filePath = '';
+      
+      if (pathParts.includes('image_upload')) {
+        const bucketIndex = pathParts.indexOf('image_upload');
+        bucketName = pathParts[bucketIndex];
+        filePath = pathParts.slice(bucketIndex + 1).join('/');
+      } else {
+        bucketName = pathParts[pathParts.length - 2] || 'image_upload';
+        filePath = pathParts[pathParts.length - 1] || '';
+      }
+      
+      if (bucketName === 'image_upload' && filePath) {
+        const { error } = await supabase.storage
+          .from('image_upload')
+          .remove([filePath]);
+        
+        if (error) {
+          console.error('Error deleting image from bucket:', error);
+        }
+      }
+    } catch (error) {
+      console.error('Error parsing image URL for deletion:', error);
+    }
+  };
+
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !editor) return;
@@ -240,6 +315,7 @@ export default function TipTap({ value, onChange , placeholder = "" }: { value: 
       setImageUploadLoading(false);
     }, 2000);
   };
+
   return (
     <div className="border rounded bg-white mb-5 dark:bg-gray-800 dark:text-white">
         <div className="post-tool flex flex-wrap border-b bg-white-50 dark:bg-gray-700 p-2">
@@ -699,7 +775,7 @@ export default function TipTap({ value, onChange , placeholder = "" }: { value: 
 
       {/* Link Modal */}
       {showLinkModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="link-modal-container bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 w-96 max-w-md mx-4">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
