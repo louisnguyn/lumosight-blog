@@ -14,6 +14,8 @@ interface Post {
   author_id: string;
   author_name?: string;
   author_avatar?: string;
+  profile_slug?: string;
+  posts_slug?: string;
   views?: number;
   likes?: number;
   comments_count?: number;
@@ -23,6 +25,7 @@ interface TopAuthor {
   author_id: string;
   author_name: string;
   author_avatar: string;
+  profile_slug?: string;
   posts_count: number;
   total_views: number;
 }
@@ -53,7 +56,7 @@ function MainPage() {
       
       const { data: profilesData, error: profilesError } = await supabase
         .from('profile')
-        .select('user_id, full_name, avatar_url')
+        .select('user_id, full_name, avatar_url, profile_slug')
         .in('user_id', authorIds);
 
       if (profilesError) throw profilesError;
@@ -66,7 +69,8 @@ function MainPage() {
       const postsWithAuthors = postsData?.map(post => ({
         ...post,
         author_name: profilesMap[post.author_id]?.full_name || 'Unknown Author',
-        author_avatar: profilesMap[post.author_id]?.avatar_url || '/profile.jpeg'
+        author_avatar: profilesMap[post.author_id]?.avatar_url || '/profile.jpeg',
+        profile_slug: profilesMap[post.author_id]?.profile_slug
       })) || [];
 
       setPosts(postsWithAuthors);
@@ -88,7 +92,7 @@ function MainPage() {
       
       const { data: profilesData, error: profilesError } = await supabase
         .from('profile')
-        .select('user_id, full_name, avatar_url')
+        .select('user_id, full_name, avatar_url, profile_slug')
         .in('user_id', authorIds);
 
       if (profilesError) throw profilesError;
@@ -109,6 +113,7 @@ function MainPage() {
             author_id: authorId,
             author_name: authorName,
             author_avatar: authorAvatar,
+            profile_slug: profile?.profile_slug,
             posts_count: 0,
             total_views: 0
           };
@@ -232,7 +237,7 @@ function MainPage() {
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            navigate(`/user/${post.author_id}`);
+                            navigate(`/user/${post.profile_slug || post.author_id}`);
                           }}
                           className="font-semibold text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 hover:underline transition-colors duration-300 text-left"
                         >
@@ -265,7 +270,7 @@ function MainPage() {
                         </span>
                       </div>
                       <Link 
-                        to={`/post/${post.id}`}
+                        to={`/post/${post.posts_slug || post.id}`}
                         className="text-blue-600 dark:text-blue-400 font-semibold hover:text-blue-800 dark:hover:text-blue-300 transition-colors"
                       >
                         Read More →
@@ -320,7 +325,7 @@ function MainPage() {
                 </div>
                 
                 <button
-                  onClick={() => navigate(`/user/${author.author_id}`)}
+                  onClick={() => navigate(`/user/${author.profile_slug || author.author_id}`)}
                   className="text-2xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors hover:underline"
                 >
                   {author.author_name}
@@ -338,7 +343,7 @@ function MainPage() {
                 </div>
                 
                 <button
-                  onClick={() => navigate(`/user/${author.author_id}`)}
+                  onClick={() => navigate(`/user/${author.profile_slug || author.author_id}`)}
                   className="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 hover:scale-105 active:scale-95 transition-all duration-300"
                 >
                   View Posts

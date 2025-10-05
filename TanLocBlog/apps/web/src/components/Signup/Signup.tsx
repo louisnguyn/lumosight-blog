@@ -2,6 +2,7 @@ import { useState } from "react";
 import { supabase } from "../../db/supabaseClient";
 import { useNavigate, Link } from "react-router-dom";
 import { useTheme } from "../../ThemeProvider";
+import { generateSlug, generateUniqueSlug } from "../../utils/slugGenerator";
 import "./Signup.css";
 export default function Signup() {
   const [email, setEmail] = useState("");
@@ -29,9 +30,22 @@ export default function Signup() {
     }
     const userId = data?.user?.id;
     if (userId) {
+      // Generate unique slug for new user
+      const { data: existingSlugs } = await supabase
+        .from("profile")
+        .select("profile_slug");
+      
+      const slugList = existingSlugs?.map(p => p.profile_slug).filter(Boolean) || [];
+      const finalSlug = await generateUniqueSlug(fullName, slugList);
+      
       const { error: profileError } = await supabase
         .from("profile")
-        .insert([{ user_id: userId, full_name: fullName, email }]);
+        .insert([{ 
+          user_id: userId, 
+          full_name: fullName, 
+          email,
+          profile_slug: finalSlug
+        }]);
       if (profileError) {
         setError(profileError.message);
         return;

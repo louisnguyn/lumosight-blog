@@ -5,6 +5,7 @@ import { supabase } from "../db/supabaseClient";
 import Detail from "../components/Blog/Detail";
 import Header from "../components/Header/Header"
 import Footer from "../components/Footer/Footer";
+import { isUUID } from "../utils/slugGenerator";
 export default function PostDetailPage() {
   const { id } = useParams();
   const [post, setPost] = useState<any>(null);
@@ -12,7 +13,15 @@ export default function PostDetailPage() {
 
   useEffect(() => {
     async function fetchPost() {
-      const { data } = await supabase.from("posts").select("*").eq("id", id).single();
+      if (!id) return;
+      
+      // Determine if the parameter is a UUID or slug
+      const isId = isUUID(id);
+      const query = isId 
+        ? supabase.from("posts").select("*").eq("id", id)
+        : supabase.from("posts").select("*").eq("posts_slug", id);
+      
+      const { data } = await query.single();
       setPost(data);
     }
     fetchPost();

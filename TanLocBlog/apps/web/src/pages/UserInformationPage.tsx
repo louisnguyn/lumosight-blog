@@ -4,6 +4,7 @@ import Footer from "../components/Footer/Footer";
 import { supabase } from '../db/supabaseClient';
 import { CgSpinner } from 'react-icons/cg';
 import { RiImageCircleAiLine } from 'react-icons/ri';
+import { generateUniqueSlug } from '../utils/slugGenerator';
 export default function UserInformationPage() {
   const [profile, setProfile] = useState<any>(null);
   const [fullName, setFullName] = useState("");
@@ -66,14 +67,28 @@ export default function UserInformationPage() {
       avatarPublicUrl = uploadedUrl;
       setAvatarUrl(uploadedUrl); // update preview to public url
     }
+    let updateData: any = {
+      full_name: fullName,
+      bio,
+      avatar_url: avatarPublicUrl,
+      phone,
+    };
+    
+    // Generate slug if full name changed OR if profile doesn't have a slug yet
+    if (fullName !== profile?.full_name || !profile?.profile_slug) {
+      const { data: existingSlugs } = await supabase
+        .from("profile")
+        .select("profile_slug")
+        .neq("user_id", userId);
+      
+      const slugList = existingSlugs?.map(p => p.profile_slug).filter(Boolean) || [];
+      const finalSlug = await generateUniqueSlug(fullName, slugList);
+      updateData.profile_slug = finalSlug;
+    }
+    
     const { error } = await supabase
       .from("profile")
-      .update({
-        full_name: fullName,
-        bio,
-        avatar_url: avatarPublicUrl,
-        phone,
-      })
+      .update(updateData)
       .eq("user_id", userId);
     if (error) setError(error.message);
     else setSuccess("Profile updated successfully!");

@@ -33,7 +33,7 @@ function MainPage() {
       
       const { data: profilesData, error: profilesError } = await supabase
         .from('profile')
-        .select('user_id, full_name, avatar_url')
+        .select('user_id, full_name, avatar_url, profile_slug')
         .in('user_id', authorIds);
 
       if (profilesError) throw profilesError;
@@ -44,7 +44,8 @@ function MainPage() {
       const postsWithAuthors = postsData?.map(post => ({
         ...post,
         author_name: profilesMap[post.author_id]?.full_name || 'Unknown Author',
-        author_avatar: profilesMap[post.author_id]?.avatar_url || '/profile.jpeg'
+        author_avatar: profilesMap[post.author_id]?.avatar_url || '/profile.jpeg',
+        profile_slug: profilesMap[post.author_id]?.profile_slug
       })) || [];
 
       setPosts(postsWithAuthors);

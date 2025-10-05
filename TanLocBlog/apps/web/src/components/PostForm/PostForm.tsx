@@ -4,6 +4,7 @@ import TipTap from "../RichTextEditor/TipTap"
 import { FiUpload } from 'react-icons/fi';
 import { CgSpinner } from 'react-icons/cg';
 import { FiX } from 'react-icons/fi';
+import { generateSlug, generateUniqueSlug } from "../../utils/slugGenerator";
 export default function PostForm({ mode, post, onSuccess, onCancel }: {
   mode: "create" | "edit";
   post?: any;
@@ -21,6 +22,7 @@ export default function PostForm({ mode, post, onSuccess, onCancel }: {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [validationErrors, setValidationErrors] = useState<{[key: string]: string}>({});
+  const [slug, setSlug] = useState(post?.posts_slug || "");
 
   useEffect(() => {
     if (mode === "edit" && post) {
@@ -30,8 +32,17 @@ export default function PostForm({ mode, post, onSuccess, onCancel }: {
       setTags(post.tags || "");
       setImage(post.image || "");
       setDescription(post.description || "");
+      setSlug(post.posts_slug || "");
     }
   }, [mode, post]);
+
+  // Auto-generate slug from title for create mode
+  useEffect(() => {
+    if (mode === "create" && title) {
+      const newSlug = generateSlug(title);
+      setSlug(newSlug);
+    }
+  }, [title, mode]);
 
   // Validation functions
   const validateField = (field: string, value: string): string => {
@@ -214,6 +225,14 @@ export default function PostForm({ mode, post, onSuccess, onCancel }: {
       imageUrl = uploadedUrl;
     }
     if (mode === "create") {
+      // Generate unique slug for new post
+      const { data: existingSlugs } = await supabase
+        .from("posts")
+        .select("posts_slug");
+      
+      const slugList = existingSlugs?.map(p => p.posts_slug).filter(Boolean) || [];
+      const finalSlug = await generateUniqueSlug(title, slugList);
+      
       const { error } = await supabase
         .from("posts")
         .insert([{
@@ -225,22 +244,37 @@ export default function PostForm({ mode, post, onSuccess, onCancel }: {
           author_id,
           views: 0,
           active: true,
-          image: imageUrl
+          image: imageUrl,
+          posts_slug: finalSlug
         }]);
       if (error) setError(error.message);
       else onSuccess();
     } else if (mode === "edit" && post?.id) {
+      let updateData: any = {
+        title,
+        description,
+        content,
+        categories: categories?.toLowerCase().trim(),
+        tags: tags?.toLowerCase().trim(),
+        image: imageUrl,
+        updated_at: new Date().toISOString(),
+      };
+      
+      // Update slug if title changed OR if post doesn't have a slug yet
+      if (title !== post.title || !post.posts_slug) {
+        const { data: existingSlugs } = await supabase
+          .from("posts")
+          .select("posts_slug")
+          .neq("id", post.id);
+        
+        const slugList = existingSlugs?.map(p => p.posts_slug).filter(Boolean) || [];
+        const finalSlug = await generateUniqueSlug(title, slugList);
+        updateData.posts_slug = finalSlug;
+      }
+      
       const { error } = await supabase
         .from("posts")
-        .update({
-          title,
-          description,
-          content,
-          categories: categories?.toLowerCase().trim(),
-          tags: tags?.toLowerCase().trim(),
-          image: imageUrl,
-          updated_at: new Date().toISOString(),
-        })
+        .update(updateData)
         .eq("id", post.id);
       if (error) setError(error.message);
       else onSuccess();

@@ -63,7 +63,7 @@ export default function BlogListItem({ post, onSelect , onToggleActive , isManag
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  navigate(`/user/${post.author_id}`);
+                  navigate(`/user/${post.profile_slug || post.author_id}`);
                 }}
                 className="text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:underline transition-colors duration-300"
               >
@@ -85,7 +85,7 @@ export default function BlogListItem({ post, onSelect , onToggleActive , isManag
           
           <h3
             className="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white mb-4 cursor-pointer group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300 line-clamp-2"
-            onClick={() => isManagement ? onSelect(post) : navigate(`/post/${post.id}`)}
+            onClick={() => isManagement ? onSelect(post) : navigate(`/post/${post.posts_slug || post.id}`)}
           >
             {post.title}
           </h3>
@@ -132,7 +132,7 @@ export default function BlogListItem({ post, onSelect , onToggleActive , isManag
             </div>
             
             <button
-              onClick={() => isManagement ? onSelect(post) : navigate(`/post/${post.id}`)}
+              onClick={() => isManagement ? onSelect(post) : navigate(`/post/${post.posts_slug || post.id}`)}
               className="inline-flex items-center px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 hover:scale-105 active:scale-95 transition-all duration-300 shadow-md hover:shadow-lg"
             >
               {isManagement ? 'Edit Post' : 'Read More'}

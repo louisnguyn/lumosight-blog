@@ -4,9 +4,10 @@ import { supabase } from "../db/supabaseClient";
 import Header from "../components/Header/Header";
 import Footer from "../components/Footer/Footer";
 import BlogListItem from "../components/Blog/BlogListItem";
-import { FaEye, FaHeart, FaUser, FaEnvelope } from 'react-icons/fa';
+import { FaEye, FaHeart, FaEnvelope } from 'react-icons/fa';
 import { BiArrowBack } from 'react-icons/bi';
 import { BsFilePost } from 'react-icons/bs';
+import { isUUID } from "../utils/slugGenerator";
 import "./UserPostsPage.css";
 
 export default function UserPostsPage() {
@@ -27,11 +28,14 @@ export default function UserPostsPage() {
 
       try {
         setLoading(true);
-        const { data: profileData, error: profileError } = await supabase
-          .from("profile")
-          .select("user_id, full_name, email, avatar_url, bio, phone, created_at")
-          .eq("user_id", userId)
-          .single();
+        
+        // Determine if the parameter is a UUID or slug
+        const isId = isUUID(userId);
+        const profileQuery = isId 
+          ? supabase.from("profile").select("user_id, full_name, email, avatar_url, bio, phone, created_at").eq("user_id", userId)
+          : supabase.from("profile").select("user_id, full_name, email, avatar_url, bio, phone, created_at").eq("profile_slug", userId);
+        
+        const { data: profileData, error: profileError } = await profileQuery.single();
 
         if (profileError) {
           setError("User not found");
@@ -43,7 +47,7 @@ export default function UserPostsPage() {
         const { data: postsData, error: postsError } = await supabase
           .from("posts")
           .select("*")
-          .eq("author_id", userId)
+          .eq("author_id", profileData.user_id)
           .eq("active", true)
           .order("created_at", { ascending: false });
 
