@@ -3,6 +3,8 @@ import { supabase } from '../db/supabaseClient';
 import { useEffect, useState } from 'react';
 import Header from "../components/Header/Header"
 import Footer from "../components/Footer/Footer"
+import SeoHead from "../components/Seo/SeoHead";
+import { SITE_NAME, SITE_URL } from "../seo/site";
 import SideBar from "../components/Sidebar/SideBar";
 import BlogList from "../components/Blog/BlogList";
 import SearchBar from "../components/SearchBar/SearchBar";
@@ -69,6 +71,11 @@ function MainPage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-900">
+      <SeoHead
+        title={`Blog | ${SITE_NAME}`}
+        description="Browse stories and articles from writers on Lumosight."
+        url={`${SITE_URL}/blog`}
+      />
       <Header />
       
       <section className="relative bg-gradient-to-br from-blue-600 via-blue-700 to-purple-800 dark:from-gray-900 dark:via-gray-800 dark:to-blue-900 text-white py-16">

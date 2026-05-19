@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Header from "../components/Header/Header";
 import Footer from "../components/Footer/Footer";
+import SeoHead from "../components/Seo/SeoHead";
 import { supabase } from "../db/supabaseClient";
 import { FaArrowRight, FaCalendarAlt, FaEye, FaHeart } from "react-icons/fa";
 import "./MainPage.css";
@@ -164,6 +165,7 @@ function MainPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <SeoHead />
       <Header />
       
       {/* Hero Section */}
@@ -243,7 +245,7 @@ function MainPage() {
                         >
                           {post.author_name}
                         </button>
-                        <p className="text-sm text-gray-500 dark:text-gray-400 flex items-center">
+                        <p className="text-sm text-gray-500 dark:text-gray-400 flex items-center" data-nosnippet>
                           <FaCalendarAlt className="mr-1" />
                           {formatDate(post.created_at)}
                         </p>

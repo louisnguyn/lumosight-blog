@@ -73,7 +73,7 @@ export default function BlogListItem({ post, onSelect , onToggleActive , isManag
           )}
           
           <div className="flex items-center gap-4 mb-4">
-            <span className="flex gap-2 text-gray-500 dark:text-gray-400 text-sm font-medium flex items-center">
+            <span className="flex gap-2 text-gray-500 dark:text-gray-400 text-sm font-medium flex items-center" data-nosnippet>
               <FaCalendarAlt/>
               {formattedDate}
             </span>

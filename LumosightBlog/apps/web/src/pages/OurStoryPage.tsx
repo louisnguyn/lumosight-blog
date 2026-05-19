@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import Header from "../components/Header/Header";
 import Footer from "../components/Footer/Footer";
+import SeoHead from "../components/Seo/SeoHead";
+import { SITE_NAME, SITE_URL } from "../seo/site";
 import { FaLightbulb, FaUsers, FaRocket, FaHeart, FaGlobe, FaCode, FaBookOpen, FaComments, FaTrophy } from "react-icons/fa";
 
 export default function OurStoryPage() {
@@ -12,6 +14,11 @@ export default function OurStoryPage() {
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+            <SeoHead
+                title={`Our Story | ${SITE_NAME}`}
+                description="Learn about Lumosight — our mission to help writers share ideas and readers discover thoughtful stories."
+                url={`${SITE_URL}/our-story`}
+            />
             <Header />
             
             {/* Hero Section */}
